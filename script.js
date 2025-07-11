@@ -1,43 +1,15 @@
-// Global variables
-let chart = null;
-let projectionData = null;
-
-// Preset ARR values
-const presets = {
-    conservative: {
-        stocks: 5,
-        cash: 2,
-        retirement: 4,
-        insurance: 2
-    },
-    average: {
-        stocks: 8, // changed from 7 to 8
-        cash: 3,
-        retirement: 6,
-        insurance: 3
-    },
-    aggressive: {
-        stocks: 12,
-        cash: 4,
-        retirement: 8,
-        insurance: 4
-    }
-};
-
-// Initialize the page
-document.addEventListener('DOMContentLoaded', function() {
-    updateTotalAssets();
-    setupEventListeners();
-    // Format asset amount fields with commas on page load
-    ['stocks-amount', 'cash-amount', 'retirement-amount', 'insurance-amount'].forEach(id => {
-        const el = document.getElementById(id);
-        if (el) {
-            formatInputWithCommas(el);
-        }
+// --- Helper functions ---
+function formatCurrency(amount) {
+    return '$' + Number(amount).toLocaleString('en-US', {
+        minimumFractionDigits: 0,
+        maximumFractionDigits: 0
     });
-});
+}
 
-// Helper to format with commas as user types
+function parseNumber(str) {
+    return parseFloat((str || '').replace(/,/g, '')) || 0;
+}
+
 function formatInputWithCommas(input) {
     let value = input.value.replace(/,/g, '');
     if (value === '' || isNaN(Number(value))) return;
@@ -45,149 +17,125 @@ function formatInputWithCommas(input) {
     input.value = num.toLocaleString('en-US', { maximumFractionDigits: 0 });
 }
 
-// Attach to asset amount fields after DOMContentLoaded
-function setupEventListeners() {
-    // Update total assets when any amount field changes
-    const amountInputs = ['stocks-amount', 'cash-amount', 'retirement-amount', 'insurance-amount'];
-    amountInputs.forEach(id => {
-        document.getElementById(id).addEventListener('input', function(e) {
-            // Only format if the value is a valid number
-            if (/^\d{1,15}$/.test(e.target.value.replace(/,/g, ''))) {
+// --- DOMContentLoaded ---
+document.addEventListener('DOMContentLoaded', function() {
+    // Format asset amount fields with commas on page load
+    ['stocks-amount', 'cash-amount', 'retirement-amount', 'insurance-amount', 'realestate-amount'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) {
+            formatInputWithCommas(el);
+            el.addEventListener('input', function(e) {
                 formatInputWithCommas(e.target);
-            }
-            updateTotalAssets();
-        });
-    });
-
-    // Add keyboard shortcuts
-    document.addEventListener('keydown', function(e) {
-        if (e.key === 'Enter' && e.ctrlKey) {
-            calculateProjection();
+                updateTotalAssets();
+            });
         }
     });
+    updateTotalAssets();
+    setupPresets();
+    document.getElementById('project-btn').addEventListener('click', calculateProjection);
+    document.getElementById('reset-btn').addEventListener('click', resetForm);
+});
+
+// --- Preset ARR values ---
+const presets = {
+    conservative: { stocks: 5, cash: 2, retirement: 4, insurance: 2, realestate: 2 },
+    average: { stocks: 8, cash: 3, retirement: 6, insurance: 3, realestate: 5 },
+    aggressive: { stocks: 12, cash: 4, retirement: 8, insurance: 4, realestate: 8 }
+};
+
+function setupPresets() {
+    document.getElementById('conservative-btn').onclick = () => setPreset('conservative');
+    document.getElementById('average-btn').onclick = () => setPreset('average');
+    document.getElementById('aggressive-btn').onclick = () => setPreset('aggressive');
 }
 
-// Format currency with commas
-function formatCurrency(amount) {
-    return '$' + amount.toLocaleString('en-US', {
-        minimumFractionDigits: 0,
-        maximumFractionDigits: 0
-    });
-}
-
-// Set preset ARR values
-function setPreset(presetType) {
-    const preset = presets[presetType];
+function setPreset(type) {
+    const preset = presets[type];
     document.getElementById('stocks-arr').value = preset.stocks;
     document.getElementById('cash-arr').value = preset.cash;
     document.getElementById('retirement-arr').value = preset.retirement;
     document.getElementById('insurance-arr').value = preset.insurance;
+    document.getElementById('realestate-arr').value = preset.realestate;
 }
 
-// Validate inputs and show warnings
-function validateInputs() {
-    const age = parseFloat(document.getElementById('age').value);
-    const inflation = parseFloat(document.getElementById('inflation').value);
-    const stocksArr = parseFloat(document.getElementById('stocks-arr').value);
-    const cashArr = parseFloat(document.getElementById('cash-arr').value);
-    const retirementArr = parseFloat(document.getElementById('retirement-arr').value);
-    const insuranceArr = parseFloat(document.getElementById('insurance-arr').value);
-    
-    let warnings = [];
-    
-    if (age < 18 || age > 100) {
-        warnings.push('Age seems unusually low or high');
-    }
-    if (inflation < 0 || inflation > 20) {
-        warnings.push('Inflation rate seems unusual');
-    }
-    if (stocksArr < -50 || stocksArr > 50) {
-        warnings.push('Stocks ARR seems extreme');
-    }
-    if (cashArr < -50 || cashArr > 50) {
-        warnings.push('Cash ARR seems extreme');
-    }
-    if (retirementArr < -50 || retirementArr > 50) {
-        warnings.push('Retirement ARR seems extreme');
-    }
-    if (insuranceArr < -50 || insuranceArr > 50) {
-        warnings.push('Insurance ARR seems extreme');
-    }
-    
-    if (warnings.length > 0) {
-        alert('Warning: ' + warnings.join(', ') + '. Please double-check your inputs.');
-    }
-}
-
-// When reading values for calculations, always strip commas:
-function getNumberValue(id) {
-    return parseFloat((document.getElementById(id).value || '0').replace(/,/g, '')) || 0;
-}
-
-// Update total assets display
+// --- Total assets calculation ---
 function updateTotalAssets() {
-    const stocks = getNumberValue('stocks-amount');
-    const cash = getNumberValue('cash-amount');
-    const retirement = getNumberValue('retirement-amount');
-    const insurance = getNumberValue('insurance-amount');
-    
-    const total = stocks + cash + retirement + insurance;
+    const stocks = parseNumber(document.getElementById('stocks-amount').value);
+    const cash = parseNumber(document.getElementById('cash-amount').value);
+    const retirement = parseNumber(document.getElementById('retirement-amount').value);
+    const insurance = parseNumber(document.getElementById('insurance-amount').value);
+    const realestate = parseNumber(document.getElementById('realestate-amount').value);
+    const total = stocks + cash + retirement + insurance + realestate;
     document.getElementById('total-assets').textContent = formatCurrency(total);
 }
 
-// Calculate projection
+// --- Reset form ---
+function resetForm() {
+    document.getElementById('age').value = 43;
+    document.getElementById('inflation').value = 2.5;
+    document.getElementById('stocks-amount').value = '1,200,000';
+    document.getElementById('cash-amount').value = '300,000';
+    document.getElementById('retirement-amount').value = '1,000,000';
+    document.getElementById('insurance-amount').value = '115,000';
+    document.getElementById('realestate-amount').value = '1,200,000';
+    document.getElementById('stocks-arr').value = '';
+    document.getElementById('cash-arr').value = '';
+    document.getElementById('retirement-arr').value = '';
+    document.getElementById('insurance-arr').value = '';
+    document.getElementById('realestate-arr').value = '';
+    updateTotalAssets();
+    if (window.chart) {
+        window.chart.destroy();
+        window.chart = null;
+    }
+    document.getElementById('income-display').style.display = 'none';
+}
+
+// --- Chart.js projection ---
 function calculateProjection() {
-    validateInputs();
-    
-    // Get input values
+    // Get values
     const age = parseFloat(document.getElementById('age').value) || 43;
     const inflation = parseFloat(document.getElementById('inflation').value) || 2.5;
-    const stocksAmount = getNumberValue('stocks-amount');
+    const stocksAmount = parseNumber(document.getElementById('stocks-amount').value);
     const stocksArr = parseFloat(document.getElementById('stocks-arr').value) || 0;
-    const cashAmount = getNumberValue('cash-amount');
+    const cashAmount = parseNumber(document.getElementById('cash-amount').value);
     const cashArr = parseFloat(document.getElementById('cash-arr').value) || 0;
-    const retirementAmount = getNumberValue('retirement-amount');
+    const retirementAmount = parseNumber(document.getElementById('retirement-amount').value);
     const retirementArr = parseFloat(document.getElementById('retirement-arr').value) || 0;
-    const insuranceAmount = getNumberValue('insurance-amount');
+    const insuranceAmount = parseNumber(document.getElementById('insurance-amount').value);
     const insuranceArr = parseFloat(document.getElementById('insurance-arr').value) || 0;
-    
-    // Calculate adjusted ARR (subtract inflation)
-    const adjustedStocksArr = stocksArr - inflation;
-    const adjustedCashArr = cashArr - inflation;
-    const adjustedRetirementArr = retirementArr - inflation;
-    const adjustedInsuranceArr = insuranceArr - inflation;
-    
-    // Years to project
+    const realestateAmount = parseNumber(document.getElementById('realestate-amount').value);
+    const realestateArr = parseFloat(document.getElementById('realestate-arr').value) || 0;
+
+    // Adjust ARR for inflation
+    const adjStocksArr = stocksArr - inflation;
+    const adjCashArr = cashArr - inflation;
+    const adjRetirementArr = retirementArr - inflation;
+    const adjInsuranceArr = insuranceArr - inflation;
+    const adjRealestateArr = realestateArr - inflation;
+
+    // Years and labels
     const years = [1, 5, 10, 15, 20, 25];
     const labels = years.map(year => `${year} years (Age ${age + year})`);
-    
-    // Calculate projections
+
+    // Projections
     const projections = years.map(year => {
-        const stocksValue = stocksAmount * Math.pow(1 + adjustedStocksArr / 100, year);
-        const cashValue = cashAmount * Math.pow(1 + adjustedCashArr / 100, year);
-        const retirementValue = retirementAmount * Math.pow(1 + adjustedRetirementArr / 100, year);
-        const insuranceValue = insuranceAmount * Math.pow(1 + adjustedInsuranceArr / 100, year);
-        
-        return stocksValue + cashValue + retirementValue + insuranceValue;
+        const stocksValue = stocksAmount * Math.pow(1 + adjStocksArr / 100, year);
+        const cashValue = cashAmount * Math.pow(1 + adjCashArr / 100, year);
+        const retirementValue = retirementAmount * Math.pow(1 + adjRetirementArr / 100, year);
+        const insuranceValue = insuranceAmount * Math.pow(1 + adjInsuranceArr / 100, year);
+        const realestateValue = realestateAmount * Math.pow(1 + adjRealestateArr / 100, year);
+        return stocksValue + cashValue + retirementValue + insuranceValue + realestateValue;
     });
-    
-    projectionData = { years, projections, labels };
-    createChart(labels, projections);
-    
-    // Show income display
+
+    renderChart(labels, projections);
     document.getElementById('income-display').style.display = 'block';
 }
 
-// Create the chart
-function createChart(labels, data) {
+function renderChart(labels, data) {
     const ctx = document.getElementById('projectionChart').getContext('2d');
-    
-    // Destroy existing chart if it exists
-    if (chart) {
-        chart.destroy();
-    }
-    
-    chart = new Chart(ctx, {
+    if (window.chart) window.chart.destroy();
+    window.chart = new Chart(ctx, {
         type: 'line',
         data: {
             labels: labels,
@@ -209,15 +157,9 @@ function createChart(labels, data) {
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            layout: {
-                padding: {
-                    bottom: 50 // Add extra space for x-axis labels
-                }
-            },
+            layout: { padding: { bottom: 50 } },
             plugins: {
-                legend: {
-                    display: false
-                },
+                legend: { display: false },
                 tooltip: {
                     enabled: true,
                     callbacks: {
@@ -235,20 +177,13 @@ function createChart(labels, data) {
                             return formatCurrency(value);
                         }
                     },
-                    grid: {
-                        color: 'rgba(0, 0, 0, 0.1)'
-                    }
+                    grid: { color: 'rgba(0, 0, 0, 0.1)' }
                 },
                 x: {
-                    grid: {
-                        color: 'rgba(0, 0, 0, 0.1)'
-                    }
+                    grid: { color: 'rgba(0, 0, 0, 0.1)' }
                 }
             },
-            interaction: {
-                intersect: false,
-                mode: 'index'
-            },
+            interaction: { intersect: false, mode: 'index' },
             onHover: function(event, elements) {
                 if (elements.length > 0) {
                     const index = elements[0].index;
@@ -259,140 +194,30 @@ function createChart(labels, data) {
             }
         }
     });
-    
-    // Add custom hover functionality
-    const canvas = document.getElementById('projectionChart');
-    canvas.addEventListener('mousemove', function(event) {
-        const rect = canvas.getBoundingClientRect();
-        const x = event.clientX - rect.left;
-        const y = event.clientY - rect.top;
-        
-        const points = chart.getDatasetMeta(0).data;
-        let closestPoint = null;
-        let minDistance = Infinity;
-        
-        points.forEach((point, index) => {
-            const distance = Math.sqrt(
-                Math.pow(point.x - x, 2) + Math.pow(point.y - y, 2)
-            );
-            if (distance < minDistance && distance < 30) {
-                minDistance = distance;
-                closestPoint = index;
-            }
-        });
-        
-        if (closestPoint !== null) {
-            const value = data[closestPoint];
-            const annualIncome = value * 0.04;
-            document.getElementById('annual-income').textContent = formatCurrency(annualIncome);
+    // Custom hover for annual income
+    document.getElementById('projectionChart').onmousemove = function(event) {
+        const points = window.chart.getElementsAtEventForMode(event, 'nearest', { intersect: true }, true);
+        if (points.length) {
+            const idx = points[0].index;
+            const value = data[idx];
+            document.getElementById('annual-income').textContent = formatCurrency(value * 0.04);
         }
-    });
+    };
 }
 
-// Reset form to defaults
-function resetForm() {
-    document.getElementById('age').value = 43;
-    document.getElementById('inflation').value = 2.5;
-    document.getElementById('stocks-amount').value = '';
-    document.getElementById('stocks-arr').value = '';
-    document.getElementById('cash-amount').value = '';
-    document.getElementById('cash-arr').value = '';
-    document.getElementById('retirement-amount').value = '';
-    document.getElementById('retirement-arr').value = '';
-    document.getElementById('insurance-amount').value = '';
-    document.getElementById('insurance-arr').value = '';
-    
-    updateTotalAssets();
-    
-    // Hide chart and income display
-    if (chart) {
-        chart.destroy();
-        chart = null;
-    }
-    document.getElementById('income-display').style.display = 'none';
-}
-
-// Advanced features
+// --- Advanced features (stubs) ---
 function downloadChart() {
-    if (!chart) {
-        alert('Please generate a projection first.');
-        return;
-    }
-    
+    if (!window.chart) return alert('Please generate a projection first.');
     const link = document.createElement('a');
     link.download = 'financial-projection.png';
-    link.href = chart.toBase64Image();
+    link.href = window.chart.toBase64Image();
     link.click();
 }
 
 function shareResults() {
-    if (!projectionData) {
-        alert('Please generate a projection first.');
-        return;
-    }
-    
-    const results = {
-        age: document.getElementById('age').value,
-        inflation: document.getElementById('inflation').value,
-        assets: {
-            stocks: document.getElementById('stocks-amount').value,
-            cash: document.getElementById('cash-amount').value,
-            retirement: document.getElementById('retirement-amount').value,
-            insurance: document.getElementById('insurance-amount').value
-        },
-        projections: projectionData
-    };
-    
-    const resultsText = JSON.stringify(results, null, 2);
-    const blob = new Blob([resultsText], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = 'financial-plan.json';
-    link.click();
-    
-    URL.revokeObjectURL(url);
+    alert('Share Results feature coming soon!');
 }
 
 function savePlan() {
-    const plan = {
-        age: document.getElementById('age').value,
-        inflation: document.getElementById('inflation').value,
-        stocksAmount: document.getElementById('stocks-amount').value,
-        stocksArr: document.getElementById('stocks-arr').value,
-        cashAmount: document.getElementById('cash-amount').value,
-        cashArr: document.getElementById('cash-arr').value,
-        retirementAmount: document.getElementById('retirement-amount').value,
-        retirementArr: document.getElementById('retirement-arr').value,
-        insuranceAmount: document.getElementById('insurance-amount').value,
-        insuranceArr: document.getElementById('insurance-arr').value,
-        timestamp: new Date().toISOString()
-    };
-    
-    localStorage.setItem('financialPlan', JSON.stringify(plan));
-    alert('Plan saved to browser storage!');
-}
-
-// Load saved plan
-function loadSavedPlan() {
-    const saved = localStorage.getItem('financialPlan');
-    if (saved) {
-        const plan = JSON.parse(saved);
-        document.getElementById('age').value = plan.age || 43;
-        document.getElementById('inflation').value = plan.inflation || 2.5;
-        document.getElementById('stocks-amount').value = plan.stocksAmount || '';
-        document.getElementById('stocks-arr').value = plan.stocksArr || '';
-        document.getElementById('cash-amount').value = plan.cashAmount || '';
-        document.getElementById('cash-arr').value = plan.cashArr || '';
-        document.getElementById('retirement-amount').value = plan.retirementAmount || '';
-        document.getElementById('retirement-arr').value = plan.retirementArr || '';
-        document.getElementById('insurance-amount').value = plan.insuranceAmount || '';
-        document.getElementById('insurance-arr').value = plan.insuranceArr || '';
-        
-        updateTotalAssets();
-    }
-}
-
-// Load saved plan on page load
-document.addEventListener('DOMContentLoaded', loadSavedPlan); 
+    alert('Save Plan feature coming soon!');
+} 
