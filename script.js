@@ -212,12 +212,4 @@ function downloadChart() {
     link.download = 'financial-projection.png';
     link.href = window.chart.toBase64Image();
     link.click();
-}
-
-function shareResults() {
-    alert('Share Results feature coming soon!');
-}
-
-function savePlan() {
-    alert('Save Plan feature coming soon!');
 } 
