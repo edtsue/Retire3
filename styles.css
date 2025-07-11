@@ -35,27 +35,26 @@ header h1 {
 .main-content {
     display: flex;
     flex-direction: row;
-    gap: 48px;
-    width: 98vw;
-    max-width: 1600px;
+    gap: 3vw;
+    width: 95vw;
     min-width: 320px;
-    margin: 0 auto 48px auto;
+    margin: 0 auto 3vw auto;
     align-items: stretch;
     justify-content: center;
-    padding-top: 32px;
-    padding-bottom: 32px;
+    padding-top: 2vw;
+    padding-bottom: 2vw;
 }
 
 .input-section, .chart-section {
     background: #fff;
     border-radius: 16px;
     box-shadow: 0 4px 16px rgba(44,62,80,0.07);
-    padding: 40px 36px;
+    padding: 3vw 2vw;
     display: flex;
     flex-direction: column;
-    min-width: 340px;
-    width: 44vw;
-    max-width: 700px;
+    min-width: 280px;
+    width: 45vw;
+    max-width: none;
     box-sizing: border-box;
 }
 
@@ -254,17 +253,31 @@ header h1 {
     background: #8e44ad;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1100px) {
     .main-content {
         flex-direction: column;
-        gap: 32px;
-        align-items: center;
-        max-width: 98vw;
+        width: 98vw;
+        gap: 2vw;
+        padding-top: 2vw;
+        padding-bottom: 2vw;
     }
     .input-section, .chart-section {
-        max-width: 98vw;
-        width: 100%;
+        width: 98vw;
         min-width: 0;
+        padding: 4vw 2vw;
+    }
+}
+
+@media (max-width: 700px) {
+    .main-content {
+        width: 100vw;
+        gap: 1vw;
+        padding-top: 1vw;
+        padding-bottom: 1vw;
+    }
+    .input-section, .chart-section {
+        width: 100vw;
+        padding: 6vw 2vw;
     }
 }
 
