@@ -35,21 +35,28 @@ header h1 {
 .main-content {
     display: flex;
     flex-direction: row;
-    gap: 40px;
-    width: 100%;
-    max-width: 1200px;
+    gap: 48px;
+    width: 98vw;
+    max-width: 1600px;
+    min-width: 320px;
+    margin: 0 auto 48px auto;
+    align-items: stretch;
     justify-content: center;
-    align-items: flex-start;
+    padding-top: 32px;
+    padding-bottom: 32px;
 }
 
 .input-section, .chart-section {
     background: #fff;
     border-radius: 16px;
     box-shadow: 0 4px 16px rgba(44,62,80,0.07);
-    padding: 32px 28px;
+    padding: 40px 36px;
     display: flex;
     flex-direction: column;
-    min-width: 320px;
+    min-width: 340px;
+    width: 44vw;
+    max-width: 700px;
+    box-sizing: border-box;
 }
 
 .input-section {
