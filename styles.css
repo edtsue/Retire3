@@ -409,6 +409,43 @@ header h1 {
     }
 }
 
+@media only screen and (max-width: 430px) and (orientation: portrait) and (-webkit-device-pixel-ratio: 2) {
+    body {
+        padding: 0;
+    }
+    .main-content {
+        padding: 0;
+        gap: 4px;
+    }
+    .input-section, .chart-section {
+        padding: 4px 1vw;
+    }
+    header h1 {
+        font-size: 1.3rem;
+        padding: 0 1vw;
+    }
+    .asset-categories h2 {
+        font-size: 0.98rem;
+    }
+    .form-row label, .asset-row label, .arr-label {
+        font-size: 0.95rem;
+    }
+    .form-row input[type="number"],
+    .asset-row input[type="text"],
+    .asset-row input[type="number"] {
+        font-size: 1rem;
+        padding: 6px 6px;
+    }
+    .preset-btn, #project-btn, #reset-btn, .download-row button {
+        font-size: 1rem;
+        padding: 10px 0;
+    }
+    .total-assets-row, .income-display {
+        font-size: 0.95rem;
+        padding: 7px;
+    }
+}
+
 /* Tooltip styles */
 .tooltip {
     position: absolute;
