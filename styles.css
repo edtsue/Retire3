@@ -53,9 +53,9 @@ header h1 {
     display: flex;
     flex-direction: column;
     min-width: 280px;
-    width: 45vw;
-    max-width: none;
+    flex: 1 1 0;
     box-sizing: border-box;
+    max-width: none;
 }
 
 .input-section {
@@ -108,7 +108,7 @@ header h1 {
 
 .asset-row {
     display: grid;
-    grid-template-columns: 80px 16px 110px 38px 80px 16px;
+    grid-template-columns: 90px 18px minmax(0,1fr) 38px minmax(0,1fr) 24px;
     align-items: center;
     gap: 4px;
     margin-bottom: 14px;
@@ -121,7 +121,8 @@ header h1 {
 }
 
 .asset-row input[type="text"], .asset-row input[type="number"] {
-    width: 100px;
+    width: 100%;
+    min-width: 0;
     max-width: 100%;
     padding: 8px 10px;
     border: 1.5px solid #e1e8ed;
