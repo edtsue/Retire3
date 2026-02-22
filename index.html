@@ -1,21 +1,21 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="light">
+<html lang="en" data-theme="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:;">
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>💰</text></svg>">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>📈</text></svg>">
     <title>Financial Planner 2.0 / Feb 2026</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Press+Start+2P&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles.css?v=4">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=5">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <header>
         <div class="header-inner">
-            <h1><span class="retro-title">Financial Planner 2.0 / Feb 2026</span></h1>
+            <h1>Financial Planner <span class="version-tag">v2.0</span></h1>
             <div class="header-actions">
                 <button type="button" class="tutorial-btn" id="tutorial-btn" aria-label="How to use this tool" title="How to use this tool">&#128214;</button>
                 <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
@@ -208,7 +208,7 @@
                     </div>
 
                     <div class="total-assets-row">
-                        <div class="total-label">CURRENT TOTAL NET WORTH <span class="coin-icon">&#9733;</span></div>
+                        <div class="total-label">CURRENT TOTAL NET WORTH</div>
                         <div class="total-value" id="total-assets">$0</div>
                     </div>
 
@@ -222,12 +222,7 @@
 
             <section class="chart-section glass-card">
                 <div class="level-up-banner" id="level-up-banner" style="display:none;">
-                    <span class="level-up-text">LEVEL UP!</span>
-                    <div class="pixel-stars">
-                        <span class="pixel-star">&#9733;</span>
-                        <span class="pixel-star">&#9733;</span>
-                        <span class="pixel-star">&#9733;</span>
-                    </div>
+                    <span class="level-up-text"><span class="milestone-arrow">&#8593;</span> Growth Milestone</span>
                 </div>
 
                 <div id="income-display" class="income-display" style="display: none;">
@@ -240,8 +235,8 @@
                 </div>
 
                 <div class="chart-placeholder" id="chart-placeholder">
-                    <div class="placeholder-icon pixel-bounce">&#127918;</div>
-                    <div class="placeholder-text">Enter your assets and click <strong>Project Growth</strong> to begin your quest</div>
+                    <div class="placeholder-icon">&#128200;</div>
+                    <div class="placeholder-text">Enter your assets and click <strong>Project Growth</strong> to begin</div>
                 </div>
 
                 <div class="chart-skeleton" id="chart-skeleton" style="display: none;">
@@ -256,21 +251,21 @@
                 <canvas id="projectionChart" style="display: none;"></canvas>
 
                 <div class="summary-cards" id="summary-cards" style="display: none;">
-                    <div class="summary-card card-income retro-border">
+                    <div class="summary-card card-income">
                         <div class="summary-label">ANNUAL INCOME (<span id="withdrawal-rate-display">4</span>%)</div>
-                        <div class="summary-value retro-num" id="summary-income">$0</div>
+                        <div class="summary-value" id="summary-income">$0</div>
                         <div class="summary-sub">
                             <input type="number" id="withdrawal-rate" value="4" min="1" max="10" step="0.5" class="withdrawal-rate-input"> <span class="input-unit">% rate</span>
                         </div>
                     </div>
-                    <div class="summary-card card-total retro-border">
+                    <div class="summary-card card-total">
                         <div class="summary-label">REAL VALUE</div>
-                        <div class="summary-value retro-num" id="summary-total">$0</div>
+                        <div class="summary-value" id="summary-total">$0</div>
                         <div class="summary-sub" id="summary-years"></div>
                     </div>
-                    <div class="summary-card card-real retro-border">
+                    <div class="summary-card card-real">
                         <div class="summary-label">NOMINAL VALUE</div>
-                        <div class="summary-value retro-num" id="summary-real">$0</div>
+                        <div class="summary-value" id="summary-real">$0</div>
                         <div class="summary-sub" id="summary-real-sub">Future account balance</div>
                     </div>
                 </div>
@@ -282,7 +277,7 @@
             </section>
         </section>
     </main>
-    <div class="toast retro-toast" id="toast"></div>
+    <div class="toast" id="toast"></div>
     <div class="coin-particles" id="coin-particles"></div>
 
     <!-- Tips Modal -->
@@ -303,7 +298,7 @@
     <div class="expenses-modal-overlay" id="expenses-modal-overlay">
         <div class="expenses-modal" id="expenses-modal">
             <div class="expenses-modal-header">
-                <h3 class="expenses-modal-title">&#128176; BIG EXPENSES</h3>
+                <h3 class="expenses-modal-title">Big Expenses</h3>
                 <button type="button" class="expenses-modal-close" id="expenses-modal-close">&times;</button>
             </div>
             <div class="expenses-modal-body" id="expenses-modal-body">
@@ -356,6 +351,6 @@
             </div>
         </div>
     </div>
-    <script src="script.js?v=5"></script>
+    <script src="script.js?v=6"></script>
 </body>
 </html>

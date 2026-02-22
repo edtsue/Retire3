@@ -151,7 +151,7 @@ function animateValue(el, start, end, duration) {
 function initTheme() {
     var saved = localStorage.getItem('retire3_theme');
     var prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    var theme = saved || (prefersDark ? 'dark' : 'light');
+    var theme = saved || 'dark';
     setTheme(theme);
 }
 
@@ -527,7 +527,7 @@ function loadPlan() {
 
         updateTotalAssets();
         updateBreakdown();
-        showToast('SAVE FILE LOADED!');
+        showToast('Plan loaded');
     } catch (e) {
         showToast('Error loading plan');
     }
@@ -565,7 +565,7 @@ function resetForm() {
     dom.levelUpBanner.style.display = 'none';
     comparisonData = null;
 
-    showToast('GAME RESET!');
+    showToast('Plan reset');
 }
 
 // --- Projection ---
@@ -798,8 +798,8 @@ function renderChart(labels, data, expenses, chartYears) {
     }
 
     var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-    var gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
-    var tickColor = isDark ? '#a0a4b8' : '#666';
+    var gridColor = isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.06)';
+    var tickColor = isDark ? '#94a3b8' : '#555d75';
 
     // Plugin to draw expense labels on chart
     var expenseLabelPlugin = {
@@ -846,16 +846,16 @@ function renderChart(labels, data, expenses, chartYears) {
                         usePointStyle: true,
                         padding: 16,
                         color: tickColor,
-                        font: { family: "'Inter', sans-serif", weight: '600', size: 12 }
+                        font: { family: "'DM Sans', 'Inter', sans-serif", weight: '600', size: 12 }
                     }
                 },
                 tooltip: {
                     enabled: true,
-                    backgroundColor: isDark ? 'rgba(30,32,44,0.95)' : 'rgba(26,26,46,0.95)',
-                    titleFont: { size: 12, family: "'Inter', sans-serif" },
-                    bodyFont: { size: 13, weight: '600', family: "'Inter', sans-serif" },
+                    backgroundColor: isDark ? 'rgba(18,19,26,0.97)' : 'rgba(26,26,46,0.95)',
+                    titleFont: { size: 12, family: "'DM Sans', 'Inter', sans-serif" },
+                    bodyFont: { size: 13, weight: '600', family: "'DM Sans', 'Inter', sans-serif" },
                     padding: 14,
-                    cornerRadius: 10,
+                    cornerRadius: 8,
                     displayColors: comparisonData ? true : false,
                     callbacks: {
                         label: function(context) {
@@ -882,7 +882,7 @@ function renderChart(labels, data, expenses, chartYears) {
                     ticks: {
                         callback: function(value) { return formatCurrency(value); },
                         color: tickColor,
-                        font: { size: 11, family: "'Inter', sans-serif" }
+                        font: { size: 11, family: "'DM Sans', 'Inter', sans-serif" }
                     },
                     grid: { color: gridColor }
                 },
@@ -890,7 +890,7 @@ function renderChart(labels, data, expenses, chartYears) {
                     ticks: {
                         maxRotation: 45,
                         color: tickColor,
-                        font: { size: 11, family: "'Inter', sans-serif" }
+                        font: { size: 11, family: "'DM Sans', 'Inter', sans-serif" }
                     },
                     grid: { color: gridColor }
                 }
@@ -941,7 +941,7 @@ function downloadChart() {
     link.download = 'financial-projection-' + timestamp + '.png';
     link.href = window.projChart.toBase64Image();
     link.click();
-    showToast('SAVE FILE ACQUIRED!');
+    showToast('Chart downloaded');
 }
 
 // --- 16-BIT RETRO GAME FEATURES ---
@@ -969,8 +969,8 @@ function showLevelUp(totalProjected) {
     var currentTotal = parseNumber(dom.totalAssets.textContent.replace('$', ''));
     if (totalProjected > currentTotal * 1.5) {
         dom.levelUpBanner.style.display = 'block';
-        dom.levelUpBanner.querySelector('.level-up-text').textContent = 'GROWTH UNLOCKED!';
-        spawnCoinBurst(10);
+        dom.levelUpBanner.querySelector('.level-up-text').innerHTML = '<span class="milestone-arrow">&#8593;</span> Growth Milestone';
+        // spawnCoinBurst(10);
         setTimeout(function() {
             dom.levelUpBanner.style.display = 'none';
         }, 4000);
@@ -1138,7 +1138,7 @@ function runMonteCarlo() {
         var p90Final = formatCurrency(percentiles.p90[percentiles.p90.length - 1]);
         showToast('80% chance: ' + p10Final + ' - ' + p90Final, 4000);
 
-        spawnCoinBurst(8);
+        // spawnCoinBurst(8);
     }, 500);
 }
 
@@ -1435,8 +1435,8 @@ function renderMonteCarloChart(labels, pct) {
     if (window.projChart) window.projChart.destroy();
 
     var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-    var gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
-    var tickColor = isDark ? '#a0a4b8' : '#666';
+    var gridColor = isDark ? 'rgba(255,255,255,0.04)' : 'rgba(0,0,0,0.06)';
+    var tickColor = isDark ? '#94a3b8' : '#555d75';
 
     var datasets = [
         // Median line (center) — first so it appears at the top of the legend
@@ -1449,7 +1449,7 @@ function renderMonteCarloChart(labels, pct) {
             fill: false,
             tension: 0.4,
             pointBackgroundColor: '#22c55e',
-            pointBorderColor: isDark ? '#1e202c' : '#fff',
+            pointBorderColor: isDark ? '#12131a' : '#fff',
             pointBorderWidth: 2,
             pointRadius: 6,
             pointHoverRadius: 10,
@@ -1529,7 +1529,7 @@ function renderMonteCarloChart(labels, pct) {
                         usePointStyle: true,
                         padding: 12,
                         color: tickColor,
-                        font: { family: "'Inter', sans-serif", weight: '600', size: 11 },
+                        font: { family: "'DM Sans', 'Inter', sans-serif", weight: '600', size: 11 },
                         filter: function(item) {
                             // Only show key labels
                             return ['Median (50th)', '75th percentile', '25th percentile', '90th percentile', '10th percentile'].indexOf(item.text) >= 0;
@@ -1538,11 +1538,11 @@ function renderMonteCarloChart(labels, pct) {
                 },
                 tooltip: {
                     enabled: true,
-                    backgroundColor: isDark ? 'rgba(30,32,44,0.95)' : 'rgba(26,26,46,0.95)',
-                    titleFont: { size: 12, family: "'Inter', sans-serif" },
-                    bodyFont: { size: 12, weight: '600', family: "'Inter', sans-serif" },
+                    backgroundColor: isDark ? 'rgba(18,19,26,0.97)' : 'rgba(26,26,46,0.95)',
+                    titleFont: { size: 12, family: "'DM Sans', 'Inter', sans-serif" },
+                    bodyFont: { size: 12, weight: '600', family: "'DM Sans', 'Inter', sans-serif" },
                     padding: 14,
-                    cornerRadius: 10,
+                    cornerRadius: 8,
                     displayColors: true,
                     callbacks: {
                         label: function(context) {
@@ -1558,7 +1558,7 @@ function renderMonteCarloChart(labels, pct) {
                     ticks: {
                         callback: function(value) { return formatCurrency(value); },
                         color: tickColor,
-                        font: { size: 11, family: "'Inter', sans-serif" }
+                        font: { size: 11, family: "'DM Sans', 'Inter', sans-serif" }
                     },
                     grid: { color: gridColor }
                 },
@@ -1566,7 +1566,7 @@ function renderMonteCarloChart(labels, pct) {
                     ticks: {
                         maxRotation: 45,
                         color: tickColor,
-                        font: { size: 11, family: "'Inter', sans-serif" }
+                        font: { size: 11, family: "'DM Sans', 'Inter', sans-serif" }
                     },
                     grid: { color: gridColor }
                 }
