@@ -52,6 +52,7 @@
                                 <div class="asset-card-header">
                                     <span class="asset-dot" style="background:#27ae60;"></span>
                                     <label for="stocks-amount">Stocks</label>
+                                    <button type="button" class="tips-btn" data-tips="stocks" title="Tips to grow Stocks">&#128161;</button>
                                 </div>
                                 <div class="asset-card-body">
                                     <div class="asset-input-group">
@@ -75,6 +76,7 @@
                                 <div class="asset-card-header">
                                     <span class="asset-dot" style="background:#3498db;"></span>
                                     <label for="cash-amount">Cash / CD / Bonds</label>
+                                    <button type="button" class="tips-btn" data-tips="cash" title="Tips to grow Cash/CD/Bonds">&#128161;</button>
                                 </div>
                                 <div class="asset-card-body">
                                     <div class="asset-input-group">
@@ -98,6 +100,7 @@
                                 <div class="asset-card-header">
                                     <span class="asset-dot" style="background:#e67e22;"></span>
                                     <label for="retirement-amount">Retirement</label>
+                                    <button type="button" class="tips-btn" data-tips="retirement" title="Tips to grow Retirement">&#128161;</button>
                                 </div>
                                 <div class="asset-card-body">
                                     <div class="asset-input-group">
@@ -121,6 +124,7 @@
                                 <div class="asset-card-header">
                                     <span class="asset-dot" style="background:#9b59b6;"></span>
                                     <label for="insurance-amount">Insurance</label>
+                                    <button type="button" class="tips-btn" data-tips="insurance" title="Tips to grow Insurance">&#128161;</button>
                                 </div>
                                 <div class="asset-card-body">
                                     <div class="asset-input-group">
@@ -144,6 +148,7 @@
                                 <div class="asset-card-header">
                                     <span class="asset-dot" style="background:#e74c3c;"></span>
                                     <label for="realestate-amount">Real Estate</label>
+                                    <button type="button" class="tips-btn" data-tips="realestate" title="Tips to grow Real Estate">&#128161;</button>
                                 </div>
                                 <div class="asset-card-body">
                                     <div class="asset-input-group">
@@ -258,6 +263,21 @@
     </main>
     <div class="toast retro-toast" id="toast"></div>
     <div class="coin-particles" id="coin-particles"></div>
+
+    <!-- Tips Modal -->
+    <div class="tips-modal-overlay" id="tips-modal-overlay">
+        <div class="tips-modal" id="tips-modal">
+            <div class="tips-modal-header">
+                <span class="tips-modal-icon" id="tips-modal-icon"></span>
+                <h3 class="tips-modal-title" id="tips-modal-title"></h3>
+                <button type="button" class="tips-modal-close" id="tips-modal-close">&times;</button>
+            </div>
+            <div class="tips-modal-body" id="tips-modal-body"></div>
+            <div class="tips-modal-footer">
+                <span class="tips-disclaimer">For informational purposes only. Not financial advice.</span>
+            </div>
+        </div>
+    </div>
     <script src="script.js?v=4"></script>
 </body>
 </html>

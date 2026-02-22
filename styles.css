@@ -1229,6 +1229,218 @@ input:invalid {
     font-size: 0.9rem !important;
 }
 
+/* ==================== Tips Button & Modal ==================== */
+.tips-btn {
+    margin-left: auto;
+    background: none;
+    border: 1.5px solid var(--border-input);
+    border-radius: 50%;
+    width: 28px;
+    height: 28px;
+    min-height: 28px;
+    font-size: 0.85rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    transition: all var(--transition);
+    flex-shrink: 0;
+    line-height: 1;
+    color: var(--text-muted);
+}
+
+.tips-btn:hover {
+    border-color: var(--accent-blue);
+    background: rgba(59, 130, 246, 0.08);
+    transform: scale(1.12);
+    box-shadow: 0 0 8px rgba(59, 130, 246, 0.2);
+}
+
+/* Tips Modal Overlay */
+.tips-modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.55);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    z-index: 5000;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.tips-modal-overlay.active {
+    display: flex;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.tips-modal {
+    background: var(--bg-card-solid);
+    border: 1.5px solid var(--border-input);
+    border-radius: var(--radius-lg);
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.25);
+    max-width: 520px;
+    width: 100%;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    animation: modalSlideIn 0.3s ease-out;
+    overflow: hidden;
+}
+
+@keyframes modalSlideIn {
+    from { opacity: 0; transform: translateY(20px) scale(0.96); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.tips-modal-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--border-input);
+    flex-shrink: 0;
+}
+
+.tips-modal-icon {
+    font-size: 1.4rem;
+    line-height: 1;
+}
+
+.tips-modal-title {
+    font-size: 1rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    flex: 1;
+    font-family: var(--pixel-font);
+    font-size: 0.65rem;
+    letter-spacing: 0.02em;
+}
+
+.tips-modal-close {
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    color: var(--text-muted);
+    cursor: pointer;
+    padding: 0;
+    line-height: 1;
+    width: 32px;
+    height: 32px;
+    min-height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: all var(--transition);
+    flex-shrink: 0;
+}
+
+.tips-modal-close:hover {
+    background: var(--bg-hover);
+    color: var(--accent-red);
+}
+
+.tips-modal-body {
+    padding: 16px 20px;
+    overflow-y: auto;
+    flex: 1;
+}
+
+.tip-item {
+    display: flex;
+    gap: 10px;
+    padding: 12px 0;
+    border-bottom: 1px solid var(--border-input);
+}
+
+.tip-item:last-child {
+    border-bottom: none;
+}
+
+.tip-number {
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--accent-blue);
+    color: white;
+    font-size: 0.7rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 2px;
+}
+
+.tip-content {
+    flex: 1;
+}
+
+.tip-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 4px;
+}
+
+.tip-desc {
+    font-size: 0.8rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+}
+
+.tips-modal-footer {
+    padding: 12px 20px;
+    border-top: 1px solid var(--border-input);
+    flex-shrink: 0;
+}
+
+.tips-disclaimer {
+    font-size: 0.68rem;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+/* Tip number colors per asset */
+.tips-modal[data-asset="stocks"] .tip-number { background: #22c55e; }
+.tips-modal[data-asset="cash"] .tip-number { background: #3b82f6; }
+.tips-modal[data-asset="retirement"] .tip-number { background: #f59e0b; }
+.tips-modal[data-asset="insurance"] .tip-number { background: #a855f7; }
+.tips-modal[data-asset="realestate"] .tip-number { background: #ef4444; }
+
+@media (max-width: 600px) {
+    .tips-modal {
+        max-height: 85vh;
+        border-radius: 16px;
+    }
+    .tips-modal-title {
+        font-size: 0.55rem;
+    }
+    .tip-title {
+        font-size: 0.8rem;
+    }
+    .tip-desc {
+        font-size: 0.75rem;
+    }
+    .tips-btn {
+        width: 26px;
+        height: 26px;
+        min-height: 26px;
+        font-size: 0.78rem;
+    }
+}
+
 /* Asset dot as pixel square */
 .asset-dot {
     border-radius: 2px !important;

@@ -189,6 +189,7 @@ document.addEventListener('DOMContentLoaded', function() {
     updateTotalAssets();
     updateBreakdown();
     setupPresets();
+    setupTipsButtons();
     setPreset('average');
 
     dom.projectBtn.addEventListener('click', calculateProjection);
@@ -780,6 +781,221 @@ function runMonteCarlo() {
 
         spawnCoinBurst(8);
     }, 500);
+}
+
+// --- ASSET TIPS & STRATEGIES ---
+var ASSET_TIPS = {
+    stocks: {
+        icon: '\uD83D\uDCC8',
+        title: 'GROW YOUR STOCKS',
+        tips: [
+            {
+                title: 'Use Low-Cost Index Funds as Your Core',
+                desc: 'Broad index funds (S&P 500, total market) provide instant diversification at minimal cost. Most active managers underperform the index over time.'
+            },
+            {
+                title: 'Dollar-Cost Average Consistently',
+                desc: 'Invest a fixed amount on a regular schedule regardless of market conditions. This removes emotion from investing and reduces the impact of volatility.'
+            },
+            {
+                title: 'Diversify Beyond U.S. Large-Cap Tech',
+                desc: 'The top 10 stocks now dominate index weight. Spread across sectors, market caps, and international markets to reduce concentration risk.'
+            },
+            {
+                title: 'Rebalance Your Portfolio Regularly',
+                desc: 'After strong performance, your allocation may drift. Rebalance back to your target mix to lock in gains and manage risk.'
+            },
+            {
+                title: 'Favor Quality Companies with Strong Cash Flows',
+                desc: 'Focus on businesses with durable profitability and solid balance sheets. Dividend-paying stocks in healthcare, utilities, and industrials add stability.'
+            },
+            {
+                title: 'Include International Stocks',
+                desc: 'Non-U.S. markets may offer more attractive valuations after lagging for a decade. International exposure reduces dependence on any single economy.'
+            }
+        ]
+    },
+    cash: {
+        icon: '\uD83C\uDFE6',
+        title: 'GROW YOUR CASH',
+        tips: [
+            {
+                title: 'Use a High-Yield Savings Account (HYSA)',
+                desc: 'Top HYSAs pay 3.8-4.2% APY \u2014 far more than standard banks. Set up automatic transfers so your cash grows without effort.'
+            },
+            {
+                title: 'Build a CD Ladder',
+                desc: 'Spread savings across CDs with staggered maturities (3, 6, 12, 24 months). As each matures, reinvest into longer terms. Balances liquidity with higher yields.'
+            },
+            {
+                title: 'Buy Series I Savings Bonds',
+                desc: 'I Bonds from the U.S. Treasury adjust with inflation (currently ~4%). Essentially risk-free with a 1-year minimum holding period.'
+            },
+            {
+                title: 'Consider Short-Term Treasury Bills',
+                desc: 'T-bills mature in under a year, are government-backed, and their interest is exempt from state and local taxes.'
+            },
+            {
+                title: 'Use Money Market Accounts for Yield + Access',
+                desc: 'Money market accounts are FDIC-insured and offer ~4% APY with check-writing access \u2014 a good middle ground between savings and CDs.'
+            },
+            {
+                title: 'Lock In Rates Before They Drop Further',
+                desc: 'Economists expect rates to continue falling. Locking in current yields on CDs and bonds today beats waiting in a low-rate checking account.'
+            }
+        ]
+    },
+    retirement: {
+        icon: '\uD83C\uDFC6',
+        title: 'GROW RETIREMENT',
+        tips: [
+            {
+                title: 'Max Out Your Contributions',
+                desc: '401(k) limit is $24,500 for 2026. IRA limit is $7,500. Aim to contribute as much as possible toward these caps each year.'
+            },
+            {
+                title: 'Always Capture the Full Employer Match',
+                desc: 'Contribute at least enough to get your full employer match. Leaving match money on the table means forgoing a guaranteed 50-100% return.'
+            },
+            {
+                title: 'Use Catch-Up Contributions (Age 50+)',
+                desc: 'Workers 50+ can add $8,000 extra to a 401(k) in 2026. Ages 60-63 get a \u201Csuper catch-up\u201D of $11,250 on top of the standard limit.'
+            },
+            {
+                title: 'Set Up Automatic Escalation',
+                desc: 'Enroll in your plan\u2019s auto-escalation to increase contributions by 1-2% annually, timed with raises. Grows savings without feeling a pay cut.'
+            },
+            {
+                title: 'Choose the Right Account Type for Your Tax Bracket',
+                desc: 'Expect higher taxes in retirement? Prioritize Roth (tax-free withdrawals). Need a break now? Use traditional pre-tax. Having both gives tax diversification.'
+            },
+            {
+                title: 'Explore Roth Conversions & Backdoor Roth',
+                desc: 'Convert traditional IRA to Roth to pay taxes now and enjoy tax-free growth later. High earners can use backdoor Roth or mega backdoor strategies.'
+            }
+        ]
+    },
+    insurance: {
+        icon: '\uD83D\uDEE1\uFE0F',
+        title: 'GROW INSURANCE',
+        tips: [
+            {
+                title: 'Choose Whole Life for Cash Value Growth',
+                desc: 'Term life has no investment component. Whole life from a mutual insurer pays dividends and offers guaranteed growth for cash value accumulation.'
+            },
+            {
+                title: 'Overfund Early with Paid-Up Additions (PUAs)',
+                desc: 'Pay above the minimum premium in the first 5-10 years using PUA riders. This dramatically accelerates cash value compounding. Stay under MEC limits.'
+            },
+            {
+                title: 'Use Tax-Free Policy Loans Instead of Withdrawals',
+                desc: 'Borrow against your cash value rather than withdrawing. Loans are not taxable, and your full cash value continues earning dividends.'
+            },
+            {
+                title: 'Reinvest Dividends to Buy Paid-Up Insurance',
+                desc: 'Direct dividends back into the policy to purchase additional paid-up insurance. This compounds your value without additional out-of-pocket cost.'
+            },
+            {
+                title: 'Choose a Strong Mutual Insurance Company',
+                desc: 'Pick a participating whole life policy from a top-tier mutual insurer with decades of consistent dividend history (e.g., MassMutual, Northwestern, Guardian).'
+            },
+            {
+                title: 'Maintain Loan Discipline & Review Annually',
+                desc: 'Over-borrowing without a repayment plan can erode benefits or trigger a taxable lapse. Repay systematically and review universal life policies yearly.'
+            }
+        ]
+    },
+    realestate: {
+        icon: '\uD83C\uDFE0',
+        title: 'GROW REAL ESTATE',
+        tips: [
+            {
+                title: 'Invest in REITs for Liquid Exposure',
+                desc: 'REITs provide diversified real estate exposure without property management. They must distribute 90%+ of income as dividends, yielding ~3.8-4%.'
+            },
+            {
+                title: 'Start with Single-Family Rentals',
+                desc: 'Lower entry cost and simpler management. Use the 1% rule: monthly rent should be at least 1% of purchase price for positive cash flow.'
+            },
+            {
+                title: 'Tap Home Equity Strategically',
+                desc: 'Use a HELOC or cash-out refi to fund your next investment. Your primary residence appreciates while borrowed equity funds a cash-flowing rental.'
+            },
+            {
+                title: 'Diversify Across Property Types & Locations',
+                desc: 'Spread across residential, industrial, and retail in different metros. Sun Belt markets offer growth; stable core markets provide reliable income.'
+            },
+            {
+                title: 'Prioritize Cash Flow Over Speculation',
+                desc: 'In the current rate environment, focus on properties that generate positive cash flow from day one. Run conservative underwriting at today\u2019s rates.'
+            },
+            {
+                title: 'Explore Emerging Niche Sectors',
+                desc: 'Data centers (98% occupancy from AI demand), senior living, and build-to-rent communities are the fastest-growing segments. Access via specialized REITs.'
+            }
+        ]
+    }
+};
+
+function openTipsModal(assetId) {
+    var tips = ASSET_TIPS[assetId];
+    if (!tips) return;
+
+    var overlay = document.getElementById('tips-modal-overlay');
+    var modal = document.getElementById('tips-modal');
+    var icon = document.getElementById('tips-modal-icon');
+    var title = document.getElementById('tips-modal-title');
+    var body = document.getElementById('tips-modal-body');
+
+    icon.textContent = tips.icon;
+    title.textContent = tips.title;
+    modal.setAttribute('data-asset', assetId);
+
+    var html = '';
+    tips.tips.forEach(function(tip, i) {
+        html += '<div class="tip-item">';
+        html += '<span class="tip-number">' + (i + 1) + '</span>';
+        html += '<div class="tip-content">';
+        html += '<div class="tip-title">' + escapeHtml(tip.title) + '</div>';
+        html += '<div class="tip-desc">' + escapeHtml(tip.desc) + '</div>';
+        html += '</div></div>';
+    });
+    body.innerHTML = html;
+
+    overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+}
+
+function closeTipsModal() {
+    var overlay = document.getElementById('tips-modal-overlay');
+    overlay.classList.remove('active');
+    document.body.style.overflow = '';
+}
+
+function setupTipsButtons() {
+    document.querySelectorAll('.tips-btn').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            e.stopPropagation();
+            var assetId = btn.getAttribute('data-tips');
+            openTipsModal(assetId);
+        });
+    });
+
+    document.getElementById('tips-modal-close').addEventListener('click', closeTipsModal);
+
+    document.getElementById('tips-modal-overlay').addEventListener('click', function(e) {
+        if (e.target === this) closeTipsModal();
+    });
+
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Escape') {
+            var overlay = document.getElementById('tips-modal-overlay');
+            if (overlay.classList.contains('active')) {
+                closeTipsModal();
+            }
+        }
+    });
 }
 
 function renderMonteCarloChart(labels, pct) {
