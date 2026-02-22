@@ -211,17 +211,14 @@
                         <span class="pixel-star">&#9733;</span>
                     </div>
                 </div>
-                <div class="summary-cards" id="summary-cards" style="display: none;">
-                    <div class="summary-card card-income retro-border">
-                        <div class="summary-label">ANNUAL LOOT (4%)</div>
-                        <div class="summary-value retro-num" id="summary-income">$0</div>
-                        <div class="summary-sub">Estimated withdrawal</div>
+
+                <div id="income-display" class="income-display" style="display: none;">
+                    <strong>Hover on chart for income at each point</strong>
+                    <div class="income-value-row">
+                        <span class="income-label">Annual Income:</span>
+                        <span class="income-amount" id="annual-income">$0</span>
                     </div>
-                    <div class="summary-card card-total retro-border">
-                        <div class="summary-label">TREASURE</div>
-                        <div class="summary-value retro-num" id="summary-total">$0</div>
-                        <div class="summary-sub" id="summary-years"></div>
-                    </div>
+                    <div class="info-tooltip">Based on the 4% safe withdrawal rule</div>
                 </div>
 
                 <div class="chart-placeholder" id="chart-placeholder">
@@ -240,13 +237,17 @@
 
                 <canvas id="projectionChart" style="display: none;"></canvas>
 
-                <div id="income-display" class="income-display" style="display: none;">
-                    <strong>Hover on chart for income at each point</strong>
-                    <div class="income-value-row">
-                        <span class="income-label">Annual Income:</span>
-                        <span class="income-amount" id="annual-income">$0</span>
+                <div class="summary-cards" id="summary-cards" style="display: none;">
+                    <div class="summary-card card-income retro-border">
+                        <div class="summary-label">ANNUAL LOOT (4%)</div>
+                        <div class="summary-value retro-num" id="summary-income">$0</div>
+                        <div class="summary-sub">Estimated withdrawal</div>
                     </div>
-                    <div class="info-tooltip">Based on the 4% safe withdrawal rule</div>
+                    <div class="summary-card card-total retro-border">
+                        <div class="summary-label">TREASURE</div>
+                        <div class="summary-value retro-num" id="summary-total">$0</div>
+                        <div class="summary-sub" id="summary-years"></div>
+                    </div>
                 </div>
 
                 <div class="chart-actions" id="chart-actions" style="display: none;">
