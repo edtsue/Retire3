@@ -924,17 +924,16 @@ input:invalid {
         gap: 12px;
     }
     .presets-row {
-        flex-direction: column;
-        align-items: flex-start;
         gap: 8px;
     }
     .preset-pills {
-        width: 100%;
+        flex: 1;
     }
     .preset-btn {
         flex: 1;
         text-align: center;
-        padding: 10px 12px;
+        padding: 10px 8px;
+        font-size: 0.72rem;
     }
     .actions-row {
         flex-wrap: wrap;
