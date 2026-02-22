@@ -1439,59 +1439,7 @@ function renderMonteCarloChart(labels, pct) {
     var tickColor = isDark ? '#a0a4b8' : '#666';
 
     var datasets = [
-        // 10th-90th band (outer)
-        {
-            label: '90th percentile',
-            data: pct.p90,
-            borderColor: 'rgba(34, 197, 94, 0.25)',
-            backgroundColor: 'rgba(34, 197, 94, 0.06)',
-            borderWidth: 1,
-            borderDash: [4, 4],
-            fill: false,
-            tension: 0.4,
-            pointRadius: 3,
-            pointBackgroundColor: 'rgba(34, 197, 94, 0.5)',
-            pointBorderWidth: 0
-        },
-        {
-            label: '10th percentile',
-            data: pct.p10,
-            borderColor: 'rgba(239, 68, 68, 0.25)',
-            backgroundColor: 'rgba(239, 68, 68, 0.06)',
-            borderWidth: 1,
-            borderDash: [4, 4],
-            fill: false,
-            tension: 0.4,
-            pointRadius: 3,
-            pointBackgroundColor: 'rgba(239, 68, 68, 0.5)',
-            pointBorderWidth: 0
-        },
-        // 25th-75th band (inner)
-        {
-            label: '75th percentile',
-            data: pct.p75,
-            borderColor: 'rgba(34, 197, 94, 0.45)',
-            backgroundColor: 'rgba(34, 197, 94, 0.12)',
-            borderWidth: 1.5,
-            fill: '+1',
-            tension: 0.4,
-            pointRadius: 4,
-            pointBackgroundColor: 'rgba(34, 197, 94, 0.7)',
-            pointBorderWidth: 0
-        },
-        {
-            label: '25th percentile',
-            data: pct.p25,
-            borderColor: 'rgba(245, 158, 11, 0.45)',
-            backgroundColor: 'rgba(245, 158, 11, 0.08)',
-            borderWidth: 1.5,
-            fill: false,
-            tension: 0.4,
-            pointRadius: 4,
-            pointBackgroundColor: 'rgba(245, 158, 11, 0.7)',
-            pointBorderWidth: 0
-        },
-        // Median line (center)
+        // Median line (center) — first so it appears at the top of the legend
         {
             label: 'Median (50th)',
             data: pct.p50,
@@ -1508,6 +1456,60 @@ function renderMonteCarloChart(labels, pct) {
             pointHoverBackgroundColor: '#fff',
             pointHoverBorderColor: '#22c55e',
             pointHoverBorderWidth: 3
+        },
+        // 90th percentile (best case)
+        {
+            label: '90th percentile',
+            data: pct.p90,
+            borderColor: 'rgba(34, 197, 94, 0.25)',
+            backgroundColor: 'rgba(34, 197, 94, 0.06)',
+            borderWidth: 1,
+            borderDash: [4, 4],
+            fill: false,
+            tension: 0.4,
+            pointRadius: 3,
+            pointBackgroundColor: 'rgba(34, 197, 94, 0.5)',
+            pointBorderWidth: 0
+        },
+        // 75th percentile
+        {
+            label: '75th percentile',
+            data: pct.p75,
+            borderColor: 'rgba(34, 197, 94, 0.45)',
+            backgroundColor: 'rgba(34, 197, 94, 0.12)',
+            borderWidth: 1.5,
+            fill: '+1',
+            tension: 0.4,
+            pointRadius: 4,
+            pointBackgroundColor: 'rgba(34, 197, 94, 0.7)',
+            pointBorderWidth: 0
+        },
+        // 25th percentile
+        {
+            label: '25th percentile',
+            data: pct.p25,
+            borderColor: 'rgba(245, 158, 11, 0.45)',
+            backgroundColor: 'rgba(245, 158, 11, 0.08)',
+            borderWidth: 1.5,
+            fill: false,
+            tension: 0.4,
+            pointRadius: 4,
+            pointBackgroundColor: 'rgba(245, 158, 11, 0.7)',
+            pointBorderWidth: 0
+        },
+        // 10th percentile (worst case)
+        {
+            label: '10th percentile',
+            data: pct.p10,
+            borderColor: 'rgba(239, 68, 68, 0.25)',
+            backgroundColor: 'rgba(239, 68, 68, 0.06)',
+            borderWidth: 1,
+            borderDash: [4, 4],
+            fill: false,
+            tension: 0.4,
+            pointRadius: 3,
+            pointBackgroundColor: 'rgba(239, 68, 68, 0.5)',
+            pointBorderWidth: 0
         }
     ];
 
