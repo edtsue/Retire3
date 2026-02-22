@@ -16,9 +16,12 @@
     <header>
         <div class="header-inner">
             <h1><span class="retro-title">Financial Planner 2.0 / Feb 2026</span></h1>
-            <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
-                <span class="theme-icon" id="theme-icon">&#9790;</span>
-            </button>
+            <div class="header-actions">
+                <button type="button" class="tutorial-btn" id="tutorial-btn" aria-label="How to use this tool" title="How to use this tool">&#128214;</button>
+                <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
+                    <span class="theme-icon" id="theme-icon">&#9790;</span>
+                </button>
+            </div>
         </div>
     </header>
     <main class="main-wrapper">
@@ -45,19 +48,20 @@
                     <div class="asset-categories">
                         <div class="section-header">
                             <h2>Assets</h2>
-                            <span class="badge" id="asset-count">5 categories</span>
+                            <button type="button" class="expenses-btn" id="expenses-btn" title="Add big expenses">&#10133; Expenses</button>
                         </div>
                         <div class="asset-grid" id="asset-grid">
                             <div class="asset-card" data-asset="stocks" data-color="#27ae60">
                                 <div class="asset-card-header">
                                     <span class="asset-dot" style="background:#27ae60;"></span>
                                     <label for="stocks-amount">Stocks</label>
+                                    <button type="button" class="zero-btn" data-zero="stocks" title="Set to zero">0</button>
                                     <button type="button" class="tips-btn" data-tips="stocks" title="Tips to grow Stocks">&#128161;</button>
                                 </div>
                                 <div class="asset-card-body">
                                     <div class="asset-input-group">
                                         <span class="input-prefix">$</span>
-                                        <input type="text" id="stocks-amount" value="1300000" inputmode="numeric" placeholder="0">
+                                        <input type="text" id="stocks-amount" value="1000000" inputmode="numeric" placeholder="0">
                                     </div>
                                     <div class="arr-group">
                                         <label for="stocks-arr" class="arr-label">Return</label>
@@ -76,6 +80,7 @@
                                 <div class="asset-card-header">
                                     <span class="asset-dot" style="background:#3498db;"></span>
                                     <label for="cash-amount">Cash / CD / Bonds</label>
+                                    <button type="button" class="zero-btn" data-zero="cash" title="Set to zero">0</button>
                                     <button type="button" class="tips-btn" data-tips="cash" title="Tips to grow Cash/CD/Bonds">&#128161;</button>
                                 </div>
                                 <div class="asset-card-body">
@@ -100,6 +105,7 @@
                                 <div class="asset-card-header">
                                     <span class="asset-dot" style="background:#e67e22;"></span>
                                     <label for="retirement-amount">Retirement</label>
+                                    <button type="button" class="zero-btn" data-zero="retirement" title="Set to zero">0</button>
                                     <button type="button" class="tips-btn" data-tips="retirement" title="Tips to grow Retirement">&#128161;</button>
                                 </div>
                                 <div class="asset-card-body">
@@ -124,6 +130,7 @@
                                 <div class="asset-card-header">
                                     <span class="asset-dot" style="background:#9b59b6;"></span>
                                     <label for="insurance-amount">Insurance</label>
+                                    <button type="button" class="zero-btn" data-zero="insurance" title="Set to zero">0</button>
                                     <button type="button" class="tips-btn" data-tips="insurance" title="Tips to grow Insurance">&#128161;</button>
                                 </div>
                                 <div class="asset-card-body">
@@ -148,6 +155,7 @@
                                 <div class="asset-card-header">
                                     <span class="asset-dot" style="background:#e74c3c;"></span>
                                     <label for="realestate-amount">Real Estate</label>
+                                    <button type="button" class="zero-btn" data-zero="realestate" title="Set to zero">0</button>
                                     <button type="button" class="tips-btn" data-tips="realestate" title="Tips to grow Real Estate">&#128161;</button>
                                 </div>
                                 <div class="asset-card-body">
@@ -183,18 +191,24 @@
                             <span class="btn-text">Project Growth</span>
                             <span class="btn-icon">&#8594;</span>
                         </button>
-                        <button type="button" id="save-btn" title="Save to browser">Save</button>
-                        <button type="button" id="load-btn" title="Load saved data">Load</button>
+                    </div>
+                    <div class="actions-row">
+                        <button type="button" id="project-no-expenses-btn" class="project-no-expenses-btn">
+                            <span class="btn-text">Project Growth WITHOUT Big Expenses</span>
+                            <span class="btn-icon">&#8594;</span>
+                        </button>
                     </div>
                     <div class="monte-carlo-row">
                         <button type="button" class="monte-carlo-btn" id="monte-carlo-btn" title="Run Monte Carlo simulation">&#127922; Monte Carlo Simulation</button>
                     </div>
                     <div class="actions-row-secondary">
+                        <button type="button" id="save-btn" title="Save to browser">Save</button>
+                        <button type="button" id="load-btn" title="Load saved data">Load</button>
                         <button type="button" id="reset-btn">Reset</button>
                     </div>
 
                     <div class="total-assets-row">
-                        <div class="total-label">GOLD <span class="coin-icon">&#9733;</span></div>
+                        <div class="total-label">CURRENT TOTAL NET WORTH <span class="coin-icon">&#9733;</span></div>
                         <div class="total-value" id="total-assets">$0</div>
                     </div>
 
@@ -222,7 +236,7 @@
                         <span class="income-label">Annual Income:</span>
                         <span class="income-amount" id="annual-income">$0</span>
                     </div>
-                    <div class="info-tooltip">Based on the 4% safe withdrawal rule</div>
+                    <div class="info-tooltip">Based on safe withdrawal rate</div>
                 </div>
 
                 <div class="chart-placeholder" id="chart-placeholder">
@@ -243,14 +257,21 @@
 
                 <div class="summary-cards" id="summary-cards" style="display: none;">
                     <div class="summary-card card-income retro-border">
-                        <div class="summary-label">ANNUAL LOOT (4%)</div>
+                        <div class="summary-label">ANNUAL INCOME (<span id="withdrawal-rate-display">4</span>%)</div>
                         <div class="summary-value retro-num" id="summary-income">$0</div>
-                        <div class="summary-sub">Estimated withdrawal</div>
+                        <div class="summary-sub">
+                            <input type="number" id="withdrawal-rate" value="4" min="1" max="10" step="0.5" class="withdrawal-rate-input"> <span class="input-unit">% rate</span>
+                        </div>
                     </div>
                     <div class="summary-card card-total retro-border">
-                        <div class="summary-label">TREASURE</div>
+                        <div class="summary-label">REAL VALUE</div>
                         <div class="summary-value retro-num" id="summary-total">$0</div>
                         <div class="summary-sub" id="summary-years"></div>
+                    </div>
+                    <div class="summary-card card-real retro-border">
+                        <div class="summary-label">NOMINAL VALUE</div>
+                        <div class="summary-value retro-num" id="summary-real">$0</div>
+                        <div class="summary-sub" id="summary-real-sub">Future account balance</div>
                     </div>
                 </div>
 
@@ -278,6 +299,63 @@
             </div>
         </div>
     </div>
-    <script src="script.js?v=4"></script>
+    <!-- Expenses Modal -->
+    <div class="expenses-modal-overlay" id="expenses-modal-overlay">
+        <div class="expenses-modal" id="expenses-modal">
+            <div class="expenses-modal-header">
+                <h3 class="expenses-modal-title">&#128176; BIG EXPENSES</h3>
+                <button type="button" class="expenses-modal-close" id="expenses-modal-close">&times;</button>
+            </div>
+            <div class="expenses-modal-body" id="expenses-modal-body">
+                <p class="expenses-desc">Add up to 5 major upcoming expenses. These will be subtracted from your projected assets at the specified year.</p>
+                <div class="expenses-list" id="expenses-list"></div>
+                <button type="button" class="expenses-add-btn" id="expenses-add-btn">&#10133; Add Expense</button>
+            </div>
+            <div class="expenses-modal-footer">
+                <span class="expenses-count" id="expenses-count">0 / 5 expenses</span>
+                <button type="button" class="expenses-done-btn" id="expenses-done-btn">Done</button>
+            </div>
+        </div>
+    </div>
+    <!-- Tutorial Modal -->
+    <div class="tutorial-modal-overlay" id="tutorial-modal-overlay">
+        <div class="tutorial-modal">
+            <div class="tutorial-modal-header">
+                <h3 class="tutorial-modal-title">&#128214; How to Use</h3>
+                <button type="button" class="tutorial-modal-close" id="tutorial-modal-close">&times;</button>
+            </div>
+            <div class="tutorial-modal-body">
+                <div class="tutorial-step">
+                    <span class="tutorial-num">1</span>
+                    <div><strong>Enter your assets</strong> &mdash; Fill in dollar amounts and expected annual returns for each of the 5 categories (Stocks, Cash/Bonds, Retirement, Insurance, Real Estate).</div>
+                </div>
+                <div class="tutorial-step">
+                    <span class="tutorial-num">2</span>
+                    <div><strong>Use presets</strong> &mdash; Pick Conservative, Average, or Aggressive to auto-fill typical return rates.</div>
+                </div>
+                <div class="tutorial-step">
+                    <span class="tutorial-num">3</span>
+                    <div><strong>Add big expenses</strong> &mdash; Click the red Expenses button to add major future costs (college, house, car) and when they'll happen.</div>
+                </div>
+                <div class="tutorial-step">
+                    <span class="tutorial-num">4</span>
+                    <div><strong>Project Growth</strong> &mdash; See your wealth grow over 25 years on the chart. Red markers show where big expenses hit.</div>
+                </div>
+                <div class="tutorial-step">
+                    <span class="tutorial-num">5</span>
+                    <div><strong>Monte Carlo</strong> &mdash; Run 2,000 randomized simulations to see best, median, and worst case scenarios.</div>
+                </div>
+                <div class="tutorial-step">
+                    <span class="tutorial-num">6</span>
+                    <div><strong>Real vs Nominal</strong> &mdash; Real Value is your purchasing power (inflation-adjusted). Nominal Value is the raw future dollar amount.</div>
+                </div>
+                <div class="tutorial-step">
+                    <span class="tutorial-num">7</span>
+                    <div><strong>Save &amp; Load</strong> &mdash; Save your plan to your browser and load it later. Use Reset to start fresh.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="script.js?v=5"></script>
 </body>
 </html>

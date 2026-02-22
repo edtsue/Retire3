@@ -1,5 +1,5 @@
 // --- Constants ---
-const WITHDRAWAL_RATE = 0.04;
+var DEFAULT_WITHDRAWAL_RATE = 4; // percent
 const PROJECTION_YEARS = [1, 5, 10, 15, 20, 25];
 const DEFAULT_AGE = 44;
 const DEFAULT_INFLATION = 2.8;
@@ -34,9 +34,13 @@ function cacheDom() {
     dom.inflation = document.getElementById('inflation');
     dom.totalAssets = document.getElementById('total-assets');
     dom.projectBtn = document.getElementById('project-btn');
+    dom.projectNoExpensesBtn = document.getElementById('project-no-expenses-btn');
     dom.resetBtn = document.getElementById('reset-btn');
     dom.saveBtn = document.getElementById('save-btn');
     dom.loadBtn = document.getElementById('load-btn');
+    dom.tutorialBtn = document.getElementById('tutorial-btn');
+    dom.tutorialOverlay = document.getElementById('tutorial-modal-overlay');
+    dom.tutorialClose = document.getElementById('tutorial-modal-close');
     dom.incomeDisplay = document.getElementById('income-display');
     dom.annualIncome = document.getElementById('annual-income');
     dom.summaryCards = document.getElementById('summary-cards');
@@ -57,6 +61,10 @@ function cacheDom() {
     dom.chartActions = document.getElementById('chart-actions');
     dom.levelUpBanner = document.getElementById('level-up-banner');
     dom.coinParticles = document.getElementById('coin-particles');
+    dom.summaryReal = document.getElementById('summary-real');
+    dom.summaryRealSub = document.getElementById('summary-real-sub');
+    dom.withdrawalRate = document.getElementById('withdrawal-rate');
+    dom.withdrawalRateDisplay = document.getElementById('withdrawal-rate-display');
 }
 
 // --- Sanitization ---
@@ -73,6 +81,14 @@ function escapeHtml(str) {
 }
 
 // --- Helper functions ---
+function getWithdrawalRate() {
+    if (dom.withdrawalRate) {
+        var val = parseFloat(dom.withdrawalRate.value);
+        if (!isNaN(val) && val >= 1 && val <= 10) return val / 100;
+    }
+    return DEFAULT_WITHDRAWAL_RATE / 100;
+}
+
 function formatCurrency(amount) {
     return '$' + Number(amount).toLocaleString('en-US', {
         minimumFractionDigits: 0,
@@ -150,6 +166,113 @@ function toggleTheme() {
     setTheme(current === 'dark' ? 'light' : 'dark');
 }
 
+// --- Big Expenses ---
+var MAX_EXPENSES = 5;
+var bigExpenses = []; // [{name: string, amount: number, yearsFromNow: number}]
+
+function openExpensesModal() {
+    var overlay = document.getElementById('expenses-modal-overlay');
+    overlay.classList.add('active');
+    document.body.style.overflow = 'hidden';
+    renderExpensesList();
+}
+
+function closeExpensesModal() {
+    var overlay = document.getElementById('expenses-modal-overlay');
+    overlay.classList.remove('active');
+    document.body.style.overflow = '';
+    // Read values from DOM inputs before closing
+    syncExpensesFromDOM();
+    updateExpensesButton();
+}
+
+function syncExpensesFromDOM() {
+    var items = document.querySelectorAll('.expense-item');
+    bigExpenses = [];
+    items.forEach(function(item) {
+        var name = item.querySelector('.expense-name').value.trim();
+        var amount = parseNumber(item.querySelector('.expense-amount').value);
+        var years = parseInt(item.querySelector('.expense-years').value, 10) || 0;
+        if (name && amount > 0 && years > 0) {
+            bigExpenses.push({ name: name, amount: amount, yearsFromNow: years });
+        }
+    });
+}
+
+function renderExpensesList() {
+    var list = document.getElementById('expenses-list');
+    var html = '';
+    bigExpenses.forEach(function(exp, i) {
+        html += '<div class="expense-item" data-index="' + i + '">';
+        html += '<input type="text" class="expense-name" placeholder="e.g. College" value="' + escapeHtml(exp.name) + '" maxlength="30">';
+        html += '<div class="expense-amount-group"><span class="input-prefix">$</span>';
+        html += '<input type="text" class="expense-amount" inputmode="numeric" placeholder="0" value="' + (exp.amount > 0 ? exp.amount.toLocaleString('en-US', {maximumFractionDigits: 0}) : '') + '"></div>';
+        html += '<div class="expense-year-group">';
+        html += '<input type="number" class="expense-years" min="1" max="50" value="' + (exp.yearsFromNow || '') + '" placeholder="0">';
+        html += '<span class="input-unit">yrs</span></div>';
+        html += '<button type="button" class="expense-remove-btn" data-index="' + i + '" title="Remove">&times;</button>';
+        html += '</div>';
+    });
+    list.innerHTML = html;
+
+    // Bind remove buttons
+    list.querySelectorAll('.expense-remove-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var idx = parseInt(btn.getAttribute('data-index'), 10);
+            bigExpenses.splice(idx, 1);
+            renderExpensesList();
+        });
+    });
+
+    // Format amount inputs
+    list.querySelectorAll('.expense-amount').forEach(function(input) {
+        input.addEventListener('input', function() {
+            formatInputWithCommas(input);
+        });
+    });
+
+    updateExpensesCount();
+}
+
+function addExpense() {
+    syncExpensesFromDOM();
+    if (bigExpenses.length >= MAX_EXPENSES) {
+        showToast('Maximum ' + MAX_EXPENSES + ' expenses');
+        return;
+    }
+    bigExpenses.push({ name: '', amount: 0, yearsFromNow: 0 });
+    renderExpensesList();
+    // Focus the name input of the newly added expense
+    var items = document.querySelectorAll('.expense-item');
+    if (items.length > 0) {
+        var lastItem = items[items.length - 1];
+        lastItem.querySelector('.expense-name').focus();
+    }
+}
+
+function updateExpensesCount() {
+    var count = document.getElementById('expenses-count');
+    var addBtn = document.getElementById('expenses-add-btn');
+    count.textContent = bigExpenses.length + ' / ' + MAX_EXPENSES + ' expenses';
+    addBtn.disabled = bigExpenses.length >= MAX_EXPENSES;
+}
+
+function updateExpensesButton() {
+    var btn = document.getElementById('expenses-btn');
+    var validExpenses = bigExpenses.filter(function(e) { return e.name && e.amount > 0 && e.yearsFromNow > 0; });
+    if (validExpenses.length > 0) {
+        btn.classList.add('has-expenses');
+        btn.innerHTML = '&#128176; ' + validExpenses.length + ' Expense' + (validExpenses.length > 1 ? 's' : '');
+    } else {
+        btn.classList.remove('has-expenses');
+        btn.innerHTML = '&#10133; Expenses';
+    }
+}
+
+function getValidExpenses() {
+    return bigExpenses.filter(function(e) { return e.name && e.amount > 0 && e.yearsFromNow > 0; });
+}
+
 // --- DOMContentLoaded ---
 document.addEventListener('DOMContentLoaded', function() {
     cacheDom();
@@ -186,19 +309,68 @@ document.addEventListener('DOMContentLoaded', function() {
         }
     });
 
+    // Zero-out buttons
+    document.querySelectorAll('.zero-btn').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+            var assetId = btn.getAttribute('data-zero');
+            var input = dom[assetId + 'Amount'];
+            if (input) {
+                input.value = '0';
+                debouncedUpdate();
+                showToast(ASSET_LABELS[assetId] + ' set to $0');
+            }
+        });
+    });
+
     updateTotalAssets();
     updateBreakdown();
     setupPresets();
     setupTipsButtons();
     setPreset('average');
 
-    dom.projectBtn.addEventListener('click', calculateProjection);
+    // Expenses modal
+    document.getElementById('expenses-btn').addEventListener('click', openExpensesModal);
+    document.getElementById('expenses-modal-close').addEventListener('click', closeExpensesModal);
+    document.getElementById('expenses-add-btn').addEventListener('click', addExpense);
+    document.getElementById('expenses-done-btn').addEventListener('click', closeExpensesModal);
+    document.getElementById('expenses-modal-overlay').addEventListener('click', function(e) {
+        if (e.target === this) closeExpensesModal();
+    });
+
+    // Withdrawal rate input
+    dom.withdrawalRate.addEventListener('input', function() {
+        var rate = getWithdrawalRate();
+        dom.withdrawalRateDisplay.textContent = dom.withdrawalRate.value;
+        // Recalculate income if projection exists
+        if (lastProjectionData && lastProjectionData.data.length > 0) {
+            var lastValue = lastProjectionData.data[lastProjectionData.data.length - 1];
+            var income = lastValue * rate;
+            dom.summaryIncome.textContent = formatCurrency(income);
+            dom.annualIncome.textContent = formatCurrency(income);
+        }
+    });
+
+    dom.projectBtn.addEventListener('click', function() { calculateProjection(); });
+    dom.projectNoExpensesBtn.addEventListener('click', calculateProjectionNoExpenses);
     dom.resetBtn.addEventListener('click', resetForm);
     dom.saveBtn.addEventListener('click', savePlan);
     dom.loadBtn.addEventListener('click', loadPlan);
     dom.themeToggle.addEventListener('click', toggleTheme);
     dom.downloadBtn.addEventListener('click', downloadChart);
     dom.compareBtn.addEventListener('click', addComparisonScenario);
+
+    // Tutorial modal
+    dom.tutorialBtn.addEventListener('click', function() {
+        dom.tutorialOverlay.classList.add('active');
+    });
+    dom.tutorialClose.addEventListener('click', function() {
+        dom.tutorialOverlay.classList.remove('active');
+    });
+    dom.tutorialOverlay.addEventListener('click', function(e) {
+        if (e.target === dom.tutorialOverlay) {
+            dom.tutorialOverlay.classList.remove('active');
+        }
+    });
 
     // Keyboard shortcut: Ctrl+Enter or Cmd+Enter to project
     document.addEventListener('keydown', function(e) {
@@ -291,6 +463,7 @@ function savePlan() {
         age: dom.age.value,
         inflation: dom.inflation.value,
         assets: {},
+        expenses: getValidExpenses(),
         preset: activePreset,
         savedAt: new Date().toISOString()
     };
@@ -336,6 +509,22 @@ function loadPlan() {
             document.getElementById(data.preset + '-btn').classList.add('active');
         }
 
+        // Load expenses
+        if (data.expenses && Array.isArray(data.expenses)) {
+            bigExpenses = data.expenses.filter(function(e) {
+                return e.name && typeof e.name === 'string' && e.amount > 0 && e.yearsFromNow > 0;
+            }).slice(0, 5).map(function(e) {
+                return {
+                    name: e.name.substring(0, 30),
+                    amount: Math.max(0, Math.min(1e12, Number(e.amount) || 0)),
+                    yearsFromNow: Math.max(1, Math.min(50, Math.floor(Number(e.yearsFromNow) || 0)))
+                };
+            });
+        } else {
+            bigExpenses = [];
+        }
+        updateExpensesButton();
+
         updateTotalAssets();
         updateBreakdown();
         showToast('SAVE FILE LOADED!');
@@ -356,6 +545,10 @@ function resetForm() {
 
     activePreset = null;
     document.querySelectorAll('.preset-btn').forEach(function(btn) { btn.classList.remove('active'); });
+
+    // Clear expenses
+    bigExpenses = [];
+    updateExpensesButton();
 
     updateTotalAssets();
     updateBreakdown();
@@ -379,7 +572,11 @@ function resetForm() {
 var lastProjectionData = null;
 var comparisonData = null;
 
-function calculateProjection() {
+function calculateProjectionNoExpenses() {
+    calculateProjection(true);
+}
+
+function calculateProjection(skipExpenses) {
     var age = sanitizeNumber(dom.age.value, 18, 100, DEFAULT_AGE);
     var inflation = sanitizeNumber(dom.inflation.value, 0, 20, DEFAULT_INFLATION);
 
@@ -412,23 +609,84 @@ function calculateProjection() {
         }
     });
 
-    // Adjusted ARR
+    // Adjusted ARR (real returns)
     var adjArrs = {};
     ASSET_IDS.forEach(function(id) {
         adjArrs[id] = arrs[id] - inflation;
     });
 
-    var labels = PROJECTION_YEARS.map(function(year) {
+    // Get valid expenses
+    var expenses = skipExpenses ? [] : getValidExpenses();
+
+    // Build chart years: merge standard projection years with expense years
+    var maxYear = PROJECTION_YEARS[PROJECTION_YEARS.length - 1];
+    var chartYearsSet = {};
+    PROJECTION_YEARS.forEach(function(y) { chartYearsSet[y] = true; });
+    expenses.forEach(function(exp) {
+        if (exp.yearsFromNow >= 1 && exp.yearsFromNow <= maxYear) {
+            chartYearsSet[exp.yearsFromNow] = true;
+        }
+    });
+    var chartYears = Object.keys(chartYearsSet).map(Number).sort(function(a, b) { return a - b; });
+
+    var labels = chartYears.map(function(year) {
         return year + ' yrs (Age ' + (age + year) + ')';
     });
 
-    var projections = PROJECTION_YEARS.map(function(year) {
-        var total = 0;
-        ASSET_IDS.forEach(function(id) {
-            total += amounts[id] * Math.pow(1 + adjArrs[id] / 100, year);
-        });
-        return Math.max(0, total);
+    // Year-by-year simulation to handle expense deductions
+    var balances = {};
+    var nominalBalances = {};
+    ASSET_IDS.forEach(function(id) {
+        balances[id] = amounts[id];
+        nominalBalances[id] = amounts[id];
     });
+
+    var projections = [];
+    var checkpoint = 0;
+
+    for (var y = 1; y <= maxYear; y++) {
+        // Grow each asset for one year
+        ASSET_IDS.forEach(function(id) {
+            balances[id] = balances[id] * (1 + adjArrs[id] / 100);
+            nominalBalances[id] = nominalBalances[id] * (1 + arrs[id] / 100);
+        });
+
+        // Deduct any expenses that occur this year (proportionally across assets)
+        expenses.forEach(function(exp) {
+            if (exp.yearsFromNow === y) {
+                var totalNow = 0;
+                ASSET_IDS.forEach(function(id) { totalNow += balances[id]; });
+                if (totalNow > 0) {
+                    ASSET_IDS.forEach(function(id) {
+                        var share = balances[id] / totalNow;
+                        balances[id] = Math.max(0, balances[id] - exp.amount * share);
+                    });
+                }
+                var nomTotal = 0;
+                ASSET_IDS.forEach(function(id) { nomTotal += nominalBalances[id]; });
+                if (nomTotal > 0) {
+                    var nominalExpense = exp.amount * Math.pow(1 + inflation / 100, y);
+                    ASSET_IDS.forEach(function(id) {
+                        var share = nominalBalances[id] / nomTotal;
+                        nominalBalances[id] = Math.max(0, nominalBalances[id] - nominalExpense * share);
+                    });
+                }
+            }
+        });
+
+        // Record at chart year checkpoints
+        if (chartYears[checkpoint] === y) {
+            var total = 0;
+            ASSET_IDS.forEach(function(id) { total += balances[id]; });
+            projections.push(Math.max(0, total));
+            checkpoint++;
+        }
+    }
+
+    // Compute nominal total at end
+    var nominalTotal = 0;
+    ASSET_IDS.forEach(function(id) { nominalTotal += nominalBalances[id]; });
+    nominalTotal = Math.max(0, nominalTotal);
 
     lastProjectionData = { labels: labels, data: projections };
 
@@ -442,14 +700,18 @@ function calculateProjection() {
     setTimeout(function() {
         dom.chartSkeleton.style.display = 'none';
         dom.projectionChart.style.display = 'block';
-        renderChart(labels, projections);
+        renderChart(labels, projections, expenses, chartYears);
 
         var lastValue = projections[projections.length - 1];
-        var lastIncome = lastValue * WITHDRAWAL_RATE;
+        var lastIncome = lastValue * getWithdrawalRate();
         dom.summaryCards.style.display = 'grid';
         dom.summaryYears.textContent = 'After ' + PROJECTION_YEARS[PROJECTION_YEARS.length - 1] + ' years';
         animateValue(dom.summaryTotal, 0, lastValue, 1000);
         animateValue(dom.summaryIncome, 0, lastIncome, 1000);
+
+        // Nominal value (future account balance without inflation adjustment)
+        animateValue(dom.summaryReal, 0, nominalTotal, 1000);
+        dom.summaryRealSub.textContent = 'Future dollars (' + inflation + '% inflation)';
 
         dom.incomeDisplay.style.display = 'block';
         dom.annualIncome.textContent = formatCurrency(lastIncome);
@@ -462,9 +724,40 @@ function calculateProjection() {
     }, 450);
 }
 
-function renderChart(labels, data) {
+function renderChart(labels, data, expenses, chartYears) {
+    expenses = expenses || [];
+    chartYears = chartYears || PROJECTION_YEARS;
     var ctx = dom.projectionChart.getContext('2d');
     if (window.projChart) window.projChart.destroy();
+
+    // Build per-point styling for expense markers
+    var expenseYearSet = {};
+    var expenseLabelsMap = {};
+    expenses.forEach(function(exp) {
+        expenseYearSet[exp.yearsFromNow] = true;
+        if (!expenseLabelsMap[exp.yearsFromNow]) expenseLabelsMap[exp.yearsFromNow] = [];
+        expenseLabelsMap[exp.yearsFromNow].push(exp.name + ' (-$' + exp.amount.toLocaleString('en-US', {maximumFractionDigits: 0}) + ')');
+    });
+
+    var pointBgColors = chartYears.map(function(year) {
+        return expenseYearSet[year] ? '#ef4444' : '#22c55e';
+    });
+    var pointBorderColors = chartYears.map(function(year) {
+        return expenseYearSet[year] ? '#ef4444' : 'var(--bg-card-solid)';
+    });
+    var pointRadii = chartYears.map(function(year) {
+        return expenseYearSet[year] ? 9 : 6;
+    });
+    var pointStyles = chartYears.map(function(year) {
+        return expenseYearSet[year] ? 'triangle' : 'circle';
+    });
+    var pointRotations = chartYears.map(function(year) {
+        return expenseYearSet[year] ? 180 : 0; // downward triangle
+    });
+
+    // Store for plugin use
+    window._expenseLabelsMap = expenseLabelsMap;
+    window._chartYears = chartYears;
 
     var datasets = [{
         label: 'Projected Assets',
@@ -474,10 +767,12 @@ function renderChart(labels, data) {
         borderWidth: 3,
         fill: true,
         tension: 0.4,
-        pointBackgroundColor: '#22c55e',
-        pointBorderColor: 'var(--bg-card-solid)',
+        pointBackgroundColor: pointBgColors,
+        pointBorderColor: pointBorderColors,
         pointBorderWidth: 2,
-        pointRadius: 6,
+        pointRadius: pointRadii,
+        pointStyle: pointStyles,
+        pointRotation: pointRotations,
         pointHoverRadius: 10,
         pointHoverBackgroundColor: '#fff',
         pointHoverBorderColor: '#22c55e',
@@ -506,9 +801,38 @@ function renderChart(labels, data) {
     var gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
     var tickColor = isDark ? '#a0a4b8' : '#666';
 
+    // Plugin to draw expense labels on chart
+    var expenseLabelPlugin = {
+        id: 'expenseLabels',
+        afterDatasetsDraw: function(chart) {
+            if (!window._expenseLabelsMap || !window._chartYears) return;
+            var meta = chart.getDatasetMeta(0);
+            var ctx2 = chart.ctx;
+            window._chartYears.forEach(function(year, i) {
+                if (window._expenseLabelsMap[year]) {
+                    var point = meta.data[i];
+                    if (!point) return;
+                    var x = point.x;
+                    var y = point.y;
+                    ctx2.save();
+                    ctx2.fillStyle = '#ef4444';
+                    ctx2.font = 'bold 10px Inter, sans-serif';
+                    ctx2.textAlign = 'center';
+                    var labelLines = window._expenseLabelsMap[year];
+                    var totalHeight = labelLines.length * 13;
+                    labelLines.forEach(function(line, li) {
+                        ctx2.fillText(line, x, y - 18 - totalHeight + (li * 13));
+                    });
+                    ctx2.restore();
+                }
+            });
+        }
+    };
+
     window.projChart = new Chart(ctx, {
         type: 'line',
         data: { labels: labels, datasets: datasets },
+        plugins: [expenseLabelPlugin],
         options: {
             responsive: true,
             maintainAspectRatio: false,
@@ -536,8 +860,18 @@ function renderChart(labels, data) {
                     callbacks: {
                         label: function(context) {
                             var total = formatCurrency(context.parsed.y);
-                            var income = formatCurrency(context.parsed.y * WITHDRAWAL_RATE);
-                            return context.dataset.label + ': ' + total + '  |  Income: ' + income;
+                            var income = formatCurrency(context.parsed.y * getWithdrawalRate());
+                            var line = context.dataset.label + ': ' + total + '  |  Income: ' + income;
+                            return line;
+                        },
+                        afterLabel: function(context) {
+                            if (context.datasetIndex !== 0) return '';
+                            var years = window._chartYears || PROJECTION_YEARS;
+                            var year = years[context.dataIndex];
+                            if (window._expenseLabelsMap && window._expenseLabelsMap[year]) {
+                                return '\u26A0 ' + window._expenseLabelsMap[year].join(', ');
+                            }
+                            return '';
                         }
                     }
                 }
@@ -566,7 +900,7 @@ function renderChart(labels, data) {
                 if (elements.length > 0) {
                     var index = elements[0].index;
                     var value = data[index];
-                    dom.annualIncome.textContent = formatCurrency(value * WITHDRAWAL_RATE);
+                    dom.annualIncome.textContent = formatCurrency(value * getWithdrawalRate());
                 }
             }
         }
@@ -693,6 +1027,9 @@ function runMonteCarlo() {
 
     showToast('Rolling the dice... ' + MC_SIMULATIONS + ' simulations');
 
+    // Get expenses for MC
+    var mcExpenses = getValidExpenses();
+
     setTimeout(function() {
         // Run simulations
         var maxYear = MC_YEARS[MC_YEARS.length - 1];
@@ -716,6 +1053,20 @@ function runMonteCarlo() {
                     var randomReturn = meanReturn + vol * randNormal();
                     balances[id] = balances[id] * (1 + randomReturn);
                     if (balances[id] < 0) balances[id] = 0;
+                });
+
+                // Deduct expenses at the right year (proportionally across assets)
+                mcExpenses.forEach(function(exp) {
+                    if (exp.yearsFromNow === y) {
+                        var totalNow = 0;
+                        ASSET_IDS.forEach(function(id) { totalNow += balances[id]; });
+                        if (totalNow > 0) {
+                            ASSET_IDS.forEach(function(id) {
+                                var share = balances[id] / totalNow;
+                                balances[id] = Math.max(0, balances[id] - exp.amount * share);
+                            });
+                        }
+                    }
                 });
 
                 // Check if this year is a checkpoint
@@ -762,11 +1113,19 @@ function runMonteCarlo() {
 
         // Update summary with median (50th percentile)
         var medianFinal = percentiles.p50[percentiles.p50.length - 1];
-        var medianIncome = medianFinal * WITHDRAWAL_RATE;
+        var medianIncome = medianFinal * getWithdrawalRate();
         dom.summaryCards.style.display = 'grid';
         dom.summaryYears.textContent = 'After ' + MC_YEARS[MC_YEARS.length - 1] + ' yrs (median)';
         animateValue(dom.summaryTotal, 0, medianFinal, 1000);
         animateValue(dom.summaryIncome, 0, medianIncome, 1000);
+
+        // Nominal value for Monte Carlo
+        // MC uses inflation-adjusted returns, so medianFinal is real
+        // Convert back to nominal: nominal = real * (1+inf)^t
+        var mcLastYears = MC_YEARS[MC_YEARS.length - 1];
+        var mcNominal = medianFinal * Math.pow(1 + inflation / 100, mcLastYears);
+        animateValue(dom.summaryReal, 0, mcNominal, 1000);
+        dom.summaryRealSub.textContent = 'Future dollars (' + inflation + '% inflation)';
 
         dom.incomeDisplay.style.display = 'block';
         dom.annualIncome.textContent = formatCurrency(medianIncome);
@@ -1054,9 +1413,18 @@ function setupTipsButtons() {
 
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Escape') {
-            var overlay = document.getElementById('tips-modal-overlay');
-            if (overlay.classList.contains('active')) {
+            var tipsOverlay = document.getElementById('tips-modal-overlay');
+            if (tipsOverlay.classList.contains('active')) {
                 closeTipsModal();
+                return;
+            }
+            var expOverlay = document.getElementById('expenses-modal-overlay');
+            if (expOverlay.classList.contains('active')) {
+                closeExpensesModal();
+                return;
+            }
+            if (dom.tutorialOverlay.classList.contains('active')) {
+                dom.tutorialOverlay.classList.remove('active');
             }
         }
     });
@@ -1206,7 +1574,7 @@ function renderMonteCarloChart(labels, pct) {
                 if (elements.length > 0) {
                     var index = elements[0].index;
                     var medianVal = pct.p50[index];
-                    dom.annualIncome.textContent = formatCurrency(medianVal * WITHDRAWAL_RATE);
+                    dom.annualIncome.textContent = formatCurrency(medianVal * getWithdrawalRate());
                 }
             }
         }
