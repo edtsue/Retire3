@@ -791,27 +791,39 @@ var ASSET_TIPS = {
         tips: [
             {
                 title: 'Use Low-Cost Index Funds as Your Core',
-                desc: 'Broad index funds (S&P 500, total market) provide instant diversification at minimal cost. Most active managers underperform the index over time.'
+                desc: 'Broad index funds (S&P 500, total market) provide instant diversification at minimal cost. Most active managers underperform the index over time.',
+                link: 'https://www.nerdwallet.com/investing/learn/how-to-invest-in-index-funds',
+                source: 'NerdWallet'
             },
             {
                 title: 'Dollar-Cost Average Consistently',
-                desc: 'Invest a fixed amount on a regular schedule regardless of market conditions. This removes emotion from investing and reduces the impact of volatility.'
+                desc: 'Invest a fixed amount on a regular schedule regardless of market conditions. This removes emotion from investing and reduces the impact of volatility.',
+                link: 'https://www.fidelity.com/learning-center/personal-finance/guide-to-dollar-cost-averaging',
+                source: 'Fidelity'
             },
             {
                 title: 'Diversify Beyond U.S. Large-Cap Tech',
-                desc: 'The top 10 stocks now dominate index weight. Spread across sectors, market caps, and international markets to reduce concentration risk.'
+                desc: 'The top 10 stocks now dominate index weight. Spread across sectors, market caps, and international markets to reduce concentration risk.',
+                link: 'https://www.morningstar.com/markets/nows-time-diversify-beyond-magnificent-seven-stocks-2',
+                source: 'Morningstar'
             },
             {
                 title: 'Rebalance Your Portfolio Regularly',
-                desc: 'After strong performance, your allocation may drift. Rebalance back to your target mix to lock in gains and manage risk.'
+                desc: 'After strong performance, your allocation may drift. Rebalance back to your target mix to lock in gains and manage risk.',
+                link: 'https://investor.vanguard.com/investor-resources-education/portfolio-management/rebalancing-your-portfolio',
+                source: 'Vanguard'
             },
             {
                 title: 'Favor Quality Companies with Strong Cash Flows',
-                desc: 'Focus on businesses with durable profitability and solid balance sheets. Dividend-paying stocks in healthcare, utilities, and industrials add stability.'
+                desc: 'Focus on businesses with durable profitability and solid balance sheets. Dividend-paying stocks in healthcare, utilities, and industrials add stability.',
+                link: 'https://www.schwab.com/learn/story/it-may-be-time-to-consider-dividend-paying-stocks',
+                source: 'Schwab'
             },
             {
                 title: 'Include International Stocks',
-                desc: 'Non-U.S. markets may offer more attractive valuations after lagging for a decade. International exposure reduces dependence on any single economy.'
+                desc: 'Non-U.S. markets may offer more attractive valuations after lagging for a decade. International exposure reduces dependence on any single economy.',
+                link: 'https://www.schwab.com/learn/story/why-invest-international-stocks',
+                source: 'Schwab'
             }
         ]
     },
@@ -821,27 +833,39 @@ var ASSET_TIPS = {
         tips: [
             {
                 title: 'Use a High-Yield Savings Account (HYSA)',
-                desc: 'Top HYSAs pay 3.8-4.2% APY \u2014 far more than standard banks. Set up automatic transfers so your cash grows without effort.'
+                desc: 'Top HYSAs pay 3.8-4.2% APY \u2014 far more than standard banks. Set up automatic transfers so your cash grows without effort.',
+                link: 'https://www.bankrate.com/banking/savings/best-high-yield-interests-savings-accounts/',
+                source: 'Bankrate'
             },
             {
                 title: 'Build a CD Ladder',
-                desc: 'Spread savings across CDs with staggered maturities (3, 6, 12, 24 months). As each matures, reinvest into longer terms. Balances liquidity with higher yields.'
+                desc: 'Spread savings across CDs with staggered maturities (3, 6, 12, 24 months). As each matures, reinvest into longer terms. Balances liquidity with higher yields.',
+                link: 'https://www.bankrate.com/banking/cds/cd-ladder-guide/',
+                source: 'Bankrate'
             },
             {
                 title: 'Buy Series I Savings Bonds',
-                desc: 'I Bonds from the U.S. Treasury adjust with inflation (currently ~4%). Essentially risk-free with a 1-year minimum holding period.'
+                desc: 'I Bonds from the U.S. Treasury adjust with inflation (currently ~4%). Essentially risk-free with a 1-year minimum holding period.',
+                link: 'https://www.nerdwallet.com/investing/learn/i-bonds',
+                source: 'NerdWallet'
             },
             {
                 title: 'Consider Short-Term Treasury Bills',
-                desc: 'T-bills mature in under a year, are government-backed, and their interest is exempt from state and local taxes.'
+                desc: 'T-bills mature in under a year, are government-backed, and their interest is exempt from state and local taxes.',
+                link: 'https://www.nerdwallet.com/investing/learn/treasury-bills',
+                source: 'NerdWallet'
             },
             {
                 title: 'Use Money Market Accounts for Yield + Access',
-                desc: 'Money market accounts are FDIC-insured and offer ~4% APY with check-writing access \u2014 a good middle ground between savings and CDs.'
+                desc: 'Money market accounts are FDIC-insured and offer ~4% APY with check-writing access \u2014 a good middle ground between savings and CDs.',
+                link: 'https://www.nerdwallet.com/banking/best/money-market-accounts',
+                source: 'NerdWallet'
             },
             {
                 title: 'Lock In Rates Before They Drop Further',
-                desc: 'Economists expect rates to continue falling. Locking in current yields on CDs and bonds today beats waiting in a low-rate checking account.'
+                desc: 'Economists expect rates to continue falling. Locking in current yields on CDs and bonds today beats waiting in a low-rate checking account.',
+                link: 'https://www.bankrate.com/banking/savings/savings-money-market-account-rate-forecast/',
+                source: 'Bankrate'
             }
         ]
     },
@@ -851,27 +875,39 @@ var ASSET_TIPS = {
         tips: [
             {
                 title: 'Max Out Your Contributions',
-                desc: '401(k) limit is $24,500 for 2026. IRA limit is $7,500. Aim to contribute as much as possible toward these caps each year.'
+                desc: '401(k) limit is $24,500 for 2026. IRA limit is $7,500. Aim to contribute as much as possible toward these caps each year.',
+                link: 'https://www.irs.gov/newsroom/401k-limit-increases-to-24500-for-2026-ira-limit-increases-to-7500',
+                source: 'IRS.gov'
             },
             {
                 title: 'Always Capture the Full Employer Match',
-                desc: 'Contribute at least enough to get your full employer match. Leaving match money on the table means forgoing a guaranteed 50-100% return.'
+                desc: 'Contribute at least enough to get your full employer match. Leaving match money on the table means forgoing a guaranteed 50-100% return.',
+                link: 'https://www.fidelity.com/learning-center/smart-money/average-401k-match',
+                source: 'Fidelity'
             },
             {
                 title: 'Use Catch-Up Contributions (Age 50+)',
-                desc: 'Workers 50+ can add $8,000 extra to a 401(k) in 2026. Ages 60-63 get a \u201Csuper catch-up\u201D of $11,250 on top of the standard limit.'
+                desc: 'Workers 50+ can add $8,000 extra to a 401(k) in 2026. Ages 60-63 get a \u201Csuper catch-up\u201D of $11,250 on top of the standard limit.',
+                link: 'https://www.schwab.com/learn/story/what-to-know-about-catch-up-contributions',
+                source: 'Schwab'
             },
             {
                 title: 'Set Up Automatic Escalation',
-                desc: 'Enroll in your plan\u2019s auto-escalation to increase contributions by 1-2% annually, timed with raises. Grows savings without feeling a pay cut.'
+                desc: 'Enroll in your plan\u2019s auto-escalation to increase contributions by 1-2% annually, timed with raises. Grows savings without feeling a pay cut.',
+                link: 'https://www.fidelity.com/viewpoints/retirement/save-more',
+                source: 'Fidelity'
             },
             {
                 title: 'Choose the Right Account Type for Your Tax Bracket',
-                desc: 'Expect higher taxes in retirement? Prioritize Roth (tax-free withdrawals). Need a break now? Use traditional pre-tax. Having both gives tax diversification.'
+                desc: 'Expect higher taxes in retirement? Prioritize Roth (tax-free withdrawals). Need a break now? Use traditional pre-tax. Having both gives tax diversification.',
+                link: 'https://www.schwab.com/learn/story/roth-vs-traditional-401k-which-is-better',
+                source: 'Schwab'
             },
             {
                 title: 'Explore Roth Conversions & Backdoor Roth',
-                desc: 'Convert traditional IRA to Roth to pay taxes now and enjoy tax-free growth later. High earners can use backdoor Roth or mega backdoor strategies.'
+                desc: 'Convert traditional IRA to Roth to pay taxes now and enjoy tax-free growth later. High earners can use backdoor Roth or mega backdoor strategies.',
+                link: 'https://www.schwab.com/learn/story/backdoor-roth-is-it-right-you',
+                source: 'Schwab'
             }
         ]
     },
@@ -881,27 +917,39 @@ var ASSET_TIPS = {
         tips: [
             {
                 title: 'Choose Whole Life for Cash Value Growth',
-                desc: 'Term life has no investment component. Whole life from a mutual insurer pays dividends and offers guaranteed growth for cash value accumulation.'
+                desc: 'Term life has no investment component. Whole life from a mutual insurer pays dividends and offers guaranteed growth for cash value accumulation.',
+                link: 'https://www.insuranceandestates.com/whole-life-insurance-cash-value-chart/',
+                source: 'Insurance & Estates'
             },
             {
                 title: 'Overfund Early with Paid-Up Additions (PUAs)',
-                desc: 'Pay above the minimum premium in the first 5-10 years using PUA riders. This dramatically accelerates cash value compounding. Stay under MEC limits.'
+                desc: 'Pay above the minimum premium in the first 5-10 years using PUA riders. This dramatically accelerates cash value compounding. Stay under MEC limits.',
+                link: 'https://www.insuranceandestates.com/paid-up-additions/',
+                source: 'Insurance & Estates'
             },
             {
                 title: 'Use Tax-Free Policy Loans Instead of Withdrawals',
-                desc: 'Borrow against your cash value rather than withdrawing. Loans are not taxable, and your full cash value continues earning dividends.'
+                desc: 'Borrow against your cash value rather than withdrawing. Loans are not taxable, and your full cash value continues earning dividends.',
+                link: 'https://www.insuranceandestates.com/life-insurance-loans/',
+                source: 'Insurance & Estates'
             },
             {
                 title: 'Reinvest Dividends to Buy Paid-Up Insurance',
-                desc: 'Direct dividends back into the policy to purchase additional paid-up insurance. This compounds your value without additional out-of-pocket cost.'
+                desc: 'Direct dividends back into the policy to purchase additional paid-up insurance. This compounds your value without additional out-of-pocket cost.',
+                link: 'https://www.insuranceandestates.com/top-10-best-dividend-paying-whole-life-insurance-companies/',
+                source: 'Insurance & Estates'
             },
             {
                 title: 'Choose a Strong Mutual Insurance Company',
-                desc: 'Pick a participating whole life policy from a top-tier mutual insurer with decades of consistent dividend history (e.g., MassMutual, Northwestern, Guardian).'
+                desc: 'Pick a participating whole life policy from a top-tier mutual insurer with decades of consistent dividend history (e.g., MassMutual, Northwestern, Guardian).',
+                link: 'https://www.nerdwallet.com/insurance/life/best-mutual-life-insurance-companies',
+                source: 'NerdWallet'
             },
             {
                 title: 'Maintain Loan Discipline & Review Annually',
-                desc: 'Over-borrowing without a repayment plan can erode benefits or trigger a taxable lapse. Repay systematically and review universal life policies yearly.'
+                desc: 'Over-borrowing without a repayment plan can erode benefits or trigger a taxable lapse. Repay systematically and review universal life policies yearly.',
+                link: 'https://www.insuranceandestates.com/borrowing-against-life-insurance-pros-and-cons/',
+                source: 'Insurance & Estates'
             }
         ]
     },
@@ -911,27 +959,39 @@ var ASSET_TIPS = {
         tips: [
             {
                 title: 'Invest in REITs for Liquid Exposure',
-                desc: 'REITs provide diversified real estate exposure without property management. They must distribute 90%+ of income as dividends, yielding ~3.8-4%.'
+                desc: 'REITs provide diversified real estate exposure without property management. They must distribute 90%+ of income as dividends, yielding ~3.8-4%.',
+                link: 'https://www.nerdwallet.com/article/investing/reit-investing',
+                source: 'NerdWallet'
             },
             {
                 title: 'Start with Single-Family Rentals',
-                desc: 'Lower entry cost and simpler management. Use the 1% rule: monthly rent should be at least 1% of purchase price for positive cash flow.'
+                desc: 'Lower entry cost and simpler management. Use the 1% rule: monthly rent should be at least 1% of purchase price for positive cash flow.',
+                link: 'https://www.biggerpockets.com/blog/single-family-investing-benefits',
+                source: 'BiggerPockets'
             },
             {
                 title: 'Tap Home Equity Strategically',
-                desc: 'Use a HELOC or cash-out refi to fund your next investment. Your primary residence appreciates while borrowed equity funds a cash-flowing rental.'
+                desc: 'Use a HELOC or cash-out refi to fund your next investment. Your primary residence appreciates while borrowed equity funds a cash-flowing rental.',
+                link: 'https://www.bankrate.com/home-equity/using-home-equity-to-invest/',
+                source: 'Bankrate'
             },
             {
                 title: 'Diversify Across Property Types & Locations',
-                desc: 'Spread across residential, industrial, and retail in different metros. Sun Belt markets offer growth; stable core markets provide reliable income.'
+                desc: 'Spread across residential, industrial, and retail in different metros. Sun Belt markets offer growth; stable core markets provide reliable income.',
+                link: 'https://www.nerdwallet.com/article/investing/5-ways-to-invest-in-real-estate',
+                source: 'NerdWallet'
             },
             {
                 title: 'Prioritize Cash Flow Over Speculation',
-                desc: 'In the current rate environment, focus on properties that generate positive cash flow from day one. Run conservative underwriting at today\u2019s rates.'
+                desc: 'In the current rate environment, focus on properties that generate positive cash flow from day one. Run conservative underwriting at today\u2019s rates.',
+                link: 'https://www.biggerpockets.com/blog/rental-property-cash-flow-analysis',
+                source: 'BiggerPockets'
             },
             {
                 title: 'Explore Emerging Niche Sectors',
-                desc: 'Data centers (98% occupancy from AI demand), senior living, and build-to-rent communities are the fastest-growing segments. Access via specialized REITs.'
+                desc: 'Data centers (98% occupancy from AI demand), senior living, and build-to-rent communities are the fastest-growing segments. Access via specialized REITs.',
+                link: 'https://www.fool.com/investing/stock-market/market-sectors/real-estate-investing/reit/data-center-reit/',
+                source: 'Motley Fool'
             }
         ]
     }
@@ -958,6 +1018,10 @@ function openTipsModal(assetId) {
         html += '<div class="tip-content">';
         html += '<div class="tip-title">' + escapeHtml(tip.title) + '</div>';
         html += '<div class="tip-desc">' + escapeHtml(tip.desc) + '</div>';
+        if (tip.link) {
+            html += '<a class="tip-link" href="' + escapeHtml(tip.link) + '" target="_blank" rel="noopener noreferrer">';
+            html += 'Read more on ' + escapeHtml(tip.source) + ' &#8599;</a>';
+        }
         html += '</div></div>';
     });
     body.innerHTML = html;
