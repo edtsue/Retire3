@@ -1,55 +1,43 @@
 # Financial Planning Tool
 
-A simple web-based financial planning calculator that helps you project your wealth growth over time.
+A web-based financial planning calculator that helps you project your wealth growth over time.
 
 ## What it does:
 
-- **Input your assets**: Enter amounts for Stocks, Cash/CD/Bonds, Retirement, and Insurance
+- **Input your assets**: Enter amounts for Stocks, Cash/CD/Bonds, Retirement, Insurance, and Real Estate
 - **Set growth rates**: Input Annual Rate of Return (ARR) for each category
-- **Account for inflation**: Automatically adjusts returns for inflation
+- **Account for inflation**: Automatically adjusts returns for inflation (with warnings for negative real returns)
 - **See projections**: View 1, 5, 10, 15, 20, and 25-year projections
 - **Interactive chart**: Hover over points to see estimated annual income (4% rule)
+- **Asset breakdown**: Visual stacked bar showing the proportion of each asset category
 
 ## Features:
 
-- **Preset buttons**: Conservative, Average, and Aggressive growth rates
-- **Real-time updates**: Total assets update as you type
-- **Input validation**: Warns about extreme values
-- **Mobile-friendly**: Works on phones and tablets
-- **Save/load**: Saves your plan to browser storage
-- **Export options**: Download chart or share results
+- **Preset buttons**: Conservative, Average, and Aggressive growth rates with active indicator
+- **Real-time updates**: Total assets and breakdown update as you type
+- **Animated summary cards**: Count-up animation for projected total and annual income
+- **Smooth chart transitions**: Loading skeleton and animated chart draw-in
+- **Toast notifications**: Feedback for presets, resets, downloads, and warnings
+- **Mobile-friendly**: Responsive design for phones and tablets
+- **Export**: Download chart as PNG with timestamped filename
 
 ## How to use:
 
 1. Enter your current age and expected inflation rate
 2. Fill in your asset amounts and expected returns
-3. Click "Project" to see the chart
-4. Hover over the chart to see estimated retirement income
-5. Use preset buttons for quick setup
+3. Use preset buttons (Conservative/Average/Aggressive) for quick ARR setup
+4. Click "Project" to see the chart and summary cards
+5. Hover over the chart to see estimated retirement income at each time point
 
 ## Files:
 
 - `index.html` - The main webpage structure
-- `styles.css` - Makes it look pretty and modern
-- `script.js` - Makes it work (calculations, charts, etc.)
+- `styles.css` - Styling and responsive design
+- `script.js` - Application logic (calculations, charts, animations)
 - `README.md` - This file
-
-## To publish on GitHub:
-
-1. Create a new repository on GitHub
-2. Upload these files to your repository
-3. Go to Settings > Pages
-4. Select "Deploy from a branch"
-5. Choose "main" branch and "/ (root)" folder
-6. Your website will be available at: `https://yourusername.github.io/repositoryname`
-
-## Keyboard shortcuts:
-
-- `Ctrl + Enter` - Run projection
 
 ## Technical details:
 
 - Uses Chart.js for the interactive chart
-- Responsive design for mobile devices
-- Local storage for saving plans
-- Real-time calculations and validation 
+- Responsive design with breakpoints at 1100px, 700px, 600px, and 430px
+- Real-time calculations with debounced input handling

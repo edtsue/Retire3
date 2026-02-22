@@ -1,103 +1,261 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; font-src https://fonts.gstatic.com; img-src 'self' data: blob:;">
     <title>Financial Planning Tool</title>
-    <link rel="stylesheet" href="styles.css?v=2">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css?v=4">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
     <header>
-        <h1>Financial Planning Tool</h1>
+        <div class="header-inner">
+            <h1><span class="retro-title">Financial Planning Tool</span></h1>
+            <button type="button" class="theme-toggle" id="theme-toggle" aria-label="Toggle dark mode">
+                <span class="theme-icon" id="theme-icon">&#9790;</span>
+            </button>
+        </div>
     </header>
     <main class="main-wrapper">
         <section class="main-content">
-            <section class="input-section">
-                <form id="planner-form" autocomplete="off">
+            <section class="input-section glass-card">
+                <form id="planner-form" autocomplete="off" novalidate>
                     <div class="inputs-top">
-                        <div class="form-row">
-                            <label for="age">Age:</label>
-                            <input type="number" id="age" value="43" min="18" max="100">
-                            <span class="unit">years old</span>
+                        <div class="form-group">
+                            <label for="age">Age</label>
+                            <div class="input-with-unit">
+                                <input type="number" id="age" value="44" min="18" max="100">
+                                <span class="input-unit">years</span>
+                            </div>
                         </div>
-                        <div class="form-row">
-                            <label for="inflation">Inflation Rate:</label>
-                            <input type="number" id="inflation" value="2.5" step="0.1" min="0" max="20">
-                            <span class="unit">% per year</span>
+                        <div class="form-group">
+                            <label for="inflation">Inflation Rate</label>
+                            <div class="input-with-unit">
+                                <input type="number" id="inflation" value="2.8" step="0.1" min="0" max="20">
+                                <span class="input-unit">%/yr</span>
+                            </div>
                         </div>
                     </div>
+
                     <div class="asset-categories">
-                        <h2>Asset Categories</h2>
-                        <div class="asset-grid">
-                            <div class="asset-row">
-                                <label for="stocks-amount">Stocks:</label>
-                                <span class="unit">$</span>
-                                <input type="text" id="stocks-amount" value="1" inputmode="numeric">
-                                <label class="arr-label" for="stocks-arr">ARR:</label>
-                                <input type="number" id="stocks-arr" value="1" step="0.1" min="-50" max="50">
-                                <span class="unit">%</span>
+                        <div class="section-header">
+                            <h2>Assets</h2>
+                            <span class="badge" id="asset-count">5 categories</span>
+                        </div>
+                        <div class="asset-grid" id="asset-grid">
+                            <div class="asset-card" data-asset="stocks" data-color="#27ae60">
+                                <div class="asset-card-header">
+                                    <span class="asset-dot" style="background:#27ae60;"></span>
+                                    <label for="stocks-amount">Stocks</label>
+                                </div>
+                                <div class="asset-card-body">
+                                    <div class="asset-input-group">
+                                        <span class="input-prefix">$</span>
+                                        <input type="text" id="stocks-amount" value="1300000" inputmode="numeric" placeholder="0">
+                                    </div>
+                                    <div class="arr-group">
+                                        <label for="stocks-arr" class="arr-label">Return</label>
+                                        <div class="arr-slider-row">
+                                            <input type="range" id="stocks-arr-slider" min="-10" max="20" step="0.5" value="1" class="arr-slider" data-target="stocks-arr">
+                                            <div class="arr-value-box">
+                                                <input type="number" id="stocks-arr" value="1" step="0.1" min="-50" max="50">
+                                                <span class="input-unit">%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="asset-row">
-                                <label for="cash-amount">Cash/CD/Bonds:</label>
-                                <span class="unit">$</span>
-                                <input type="text" id="cash-amount" value="1" inputmode="numeric">
-                                <label class="arr-label" for="cash-arr">ARR:</label>
-                                <input type="number" id="cash-arr" value="1" step="0.1" min="-50" max="50">
-                                <span class="unit">%</span>
+
+                            <div class="asset-card" data-asset="cash" data-color="#3498db">
+                                <div class="asset-card-header">
+                                    <span class="asset-dot" style="background:#3498db;"></span>
+                                    <label for="cash-amount">Cash / CD / Bonds</label>
+                                </div>
+                                <div class="asset-card-body">
+                                    <div class="asset-input-group">
+                                        <span class="input-prefix">$</span>
+                                        <input type="text" id="cash-amount" value="300000" inputmode="numeric" placeholder="0">
+                                    </div>
+                                    <div class="arr-group">
+                                        <label for="cash-arr" class="arr-label">Return</label>
+                                        <div class="arr-slider-row">
+                                            <input type="range" id="cash-arr-slider" min="-10" max="20" step="0.5" value="1" class="arr-slider" data-target="cash-arr">
+                                            <div class="arr-value-box">
+                                                <input type="number" id="cash-arr" value="1" step="0.1" min="-50" max="50">
+                                                <span class="input-unit">%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="asset-row">
-                                <label for="retirement-amount">Retirement:</label>
-                                <span class="unit">$</span>
-                                <input type="text" id="retirement-amount" value="1" inputmode="numeric">
-                                <label class="arr-label" for="retirement-arr">ARR:</label>
-                                <input type="number" id="retirement-arr" value="1" step="0.1" min="-50" max="50">
-                                <span class="unit">%</span>
+
+                            <div class="asset-card" data-asset="retirement" data-color="#e67e22">
+                                <div class="asset-card-header">
+                                    <span class="asset-dot" style="background:#e67e22;"></span>
+                                    <label for="retirement-amount">Retirement</label>
+                                </div>
+                                <div class="asset-card-body">
+                                    <div class="asset-input-group">
+                                        <span class="input-prefix">$</span>
+                                        <input type="text" id="retirement-amount" value="1000000" inputmode="numeric" placeholder="0">
+                                    </div>
+                                    <div class="arr-group">
+                                        <label for="retirement-arr" class="arr-label">Return</label>
+                                        <div class="arr-slider-row">
+                                            <input type="range" id="retirement-arr-slider" min="-10" max="20" step="0.5" value="1" class="arr-slider" data-target="retirement-arr">
+                                            <div class="arr-value-box">
+                                                <input type="number" id="retirement-arr" value="1" step="0.1" min="-50" max="50">
+                                                <span class="input-unit">%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="asset-row">
-                                <label for="insurance-amount">Insurance:</label>
-                                <span class="unit">$</span>
-                                <input type="text" id="insurance-amount" value="1" inputmode="numeric">
-                                <label class="arr-label" for="insurance-arr">ARR:</label>
-                                <input type="number" id="insurance-arr" value="1" step="0.1" min="-50" max="50">
-                                <span class="unit">%</span>
+
+                            <div class="asset-card" data-asset="insurance" data-color="#9b59b6">
+                                <div class="asset-card-header">
+                                    <span class="asset-dot" style="background:#9b59b6;"></span>
+                                    <label for="insurance-amount">Insurance</label>
+                                </div>
+                                <div class="asset-card-body">
+                                    <div class="asset-input-group">
+                                        <span class="input-prefix">$</span>
+                                        <input type="text" id="insurance-amount" value="100000" inputmode="numeric" placeholder="0">
+                                    </div>
+                                    <div class="arr-group">
+                                        <label for="insurance-arr" class="arr-label">Return</label>
+                                        <div class="arr-slider-row">
+                                            <input type="range" id="insurance-arr-slider" min="-10" max="20" step="0.5" value="1" class="arr-slider" data-target="insurance-arr">
+                                            <div class="arr-value-box">
+                                                <input type="number" id="insurance-arr" value="1" step="0.1" min="-50" max="50">
+                                                <span class="input-unit">%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <div class="asset-row">
-                                <label for="realestate-amount">Real Estate:</label>
-                                <span class="unit">$</span>
-                                <input type="text" id="realestate-amount" value="1" inputmode="numeric">
-                                <label class="arr-label" for="realestate-arr">ARR:</label>
-                                <input type="number" id="realestate-arr" value="1" step="0.1" min="-50" max="50">
-                                <span class="unit">%</span>
+
+                            <div class="asset-card" data-asset="realestate" data-color="#e74c3c">
+                                <div class="asset-card-header">
+                                    <span class="asset-dot" style="background:#e74c3c;"></span>
+                                    <label for="realestate-amount">Real Estate</label>
+                                </div>
+                                <div class="asset-card-body">
+                                    <div class="asset-input-group">
+                                        <span class="input-prefix">$</span>
+                                        <input type="text" id="realestate-amount" value="1200000" inputmode="numeric" placeholder="0">
+                                    </div>
+                                    <div class="arr-group">
+                                        <label for="realestate-arr" class="arr-label">Return</label>
+                                        <div class="arr-slider-row">
+                                            <input type="range" id="realestate-arr-slider" min="-10" max="20" step="0.5" value="1" class="arr-slider" data-target="realestate-arr">
+                                            <div class="arr-value-box">
+                                                <input type="number" id="realestate-arr" value="1" step="0.1" min="-50" max="50">
+                                                <span class="input-unit">%</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
+
                     <div class="presets-row">
-                        <button type="button" class="preset-btn" id="conservative-btn">Conservative</button>
-                        <button type="button" class="preset-btn" id="average-btn">Average</button>
-                        <button type="button" class="preset-btn" id="aggressive-btn">Aggressive</button>
+                        <span class="presets-label">Presets</span>
+                        <div class="preset-pills">
+                            <button type="button" class="preset-btn" id="conservative-btn">Conservative</button>
+                            <button type="button" class="preset-btn" id="average-btn">Average</button>
+                            <button type="button" class="preset-btn" id="aggressive-btn">Aggressive</button>
+                        </div>
                     </div>
+
                     <div class="actions-row">
-                        <button type="button" id="project-btn">Project</button>
+                        <button type="button" id="project-btn">
+                            <span class="btn-text">Project Growth</span>
+                            <span class="btn-icon">&#8594;</span>
+                        </button>
                         <button type="button" id="reset-btn">Reset</button>
+                        <button type="button" id="save-btn" title="Save to browser">Save</button>
+                        <button type="button" id="load-btn" title="Load saved data">Load</button>
                     </div>
+
                     <div class="total-assets-row">
-                        <strong>Total Assets: <span id="total-assets">$0</span></strong>
+                        <div class="total-label">GOLD <span class="coin-icon">&#9733;</span></div>
+                        <div class="total-value" id="total-assets">$0</div>
+                    </div>
+                    <div class="xp-bar-wrapper" id="xp-bar-wrapper" style="display:none;">
+                        <div class="xp-label">PORTFOLIO XP</div>
+                        <div class="xp-bar"><div class="xp-fill" id="xp-fill"></div></div>
+                        <div class="xp-text" id="xp-text">LVL 1</div>
+                    </div>
+
+                    <div class="asset-breakdown" id="asset-breakdown" style="display: none;">
+                        <div class="breakdown-bars" id="breakdown-bars"></div>
+                        <div class="breakdown-legend" id="breakdown-legend"></div>
                     </div>
                 </form>
             </section>
-            <section class="chart-section">
-                <div id="income-display" class="income-display" style="display: none;">
-                    <strong>Estimated Annual Income: <span id="annual-income">$0</span></strong>
-                    <div class="info-tooltip">ℹ️ 4% rule for retirement withdrawal</div>
+
+            <section class="chart-section glass-card">
+                <div class="level-up-banner" id="level-up-banner" style="display:none;">
+                    <span class="level-up-text">LEVEL UP!</span>
+                    <div class="pixel-stars">
+                        <span class="pixel-star">&#9733;</span>
+                        <span class="pixel-star">&#9733;</span>
+                        <span class="pixel-star">&#9733;</span>
+                    </div>
                 </div>
-                <canvas id="projectionChart"></canvas>
-                <div class="download-row">
-                    <button type="button" onclick="downloadChart()">Download Chart</button>
+                <div class="summary-cards" id="summary-cards" style="display: none;">
+                    <div class="summary-card card-total retro-border">
+                        <div class="summary-label">TREASURE</div>
+                        <div class="summary-value retro-num" id="summary-total">$0</div>
+                        <div class="summary-sub" id="summary-years"></div>
+                    </div>
+                    <div class="summary-card card-income retro-border">
+                        <div class="summary-label">ANNUAL LOOT (4%)</div>
+                        <div class="summary-value retro-num" id="summary-income">$0</div>
+                        <div class="summary-sub">Estimated withdrawal</div>
+                    </div>
+                </div>
+
+                <div class="chart-placeholder" id="chart-placeholder">
+                    <div class="placeholder-icon pixel-bounce">&#127918;</div>
+                    <div class="placeholder-text">Enter your assets and click <strong>Project Growth</strong> to begin your quest</div>
+                </div>
+
+                <div class="chart-skeleton" id="chart-skeleton" style="display: none;">
+                    <div class="skeleton-bar"></div>
+                    <div class="skeleton-bar"></div>
+                    <div class="skeleton-bar"></div>
+                    <div class="skeleton-bar"></div>
+                    <div class="skeleton-bar"></div>
+                    <div class="skeleton-bar"></div>
+                </div>
+
+                <canvas id="projectionChart" style="display: none;"></canvas>
+
+                <div id="income-display" class="income-display" style="display: none;">
+                    <strong>Hover on chart for income at each point</strong>
+                    <div class="income-value-row">
+                        <span class="income-label">Annual Income:</span>
+                        <span class="income-amount" id="annual-income">$0</span>
+                    </div>
+                    <div class="info-tooltip">Based on the 4% safe withdrawal rule</div>
+                </div>
+
+                <div class="chart-actions" id="chart-actions" style="display: none;">
+                    <button type="button" id="download-btn">Download PNG</button>
+                    <button type="button" id="compare-btn">Compare Scenario</button>
                 </div>
             </section>
         </section>
     </main>
-    <script src="script.js?v=2"></script>
+    <div class="toast retro-toast" id="toast"></div>
+    <div class="coin-particles" id="coin-particles"></div>
+    <script src="script.js?v=4"></script>
 </body>
-</html> 
+</html>
