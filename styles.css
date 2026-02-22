@@ -442,8 +442,8 @@ header h1 {
     color: var(--text-secondary);
     border: 1.5px solid var(--border-input);
     border-radius: 20px;
-    padding: 8px 10px;
-    font-size: 0.78rem;
+    padding: 8px 6px;
+    font-size: 0.68rem;
     font-weight: 600;
     font-family: var(--font);
     cursor: pointer;
@@ -939,8 +939,8 @@ input:invalid {
         gap: 12px;
     }
     .preset-btn {
-        padding: 8px 6px;
-        font-size: 0.7rem;
+        padding: 8px 4px;
+        font-size: 0.6rem;
     }
     .actions-row {
         flex-wrap: wrap;
@@ -1186,7 +1186,7 @@ input:invalid {
 /* Preset buttons - retro style on active */
 .preset-btn.active {
     font-family: var(--pixel-font);
-    font-size: 0.6rem;
+    font-size: 0.5rem;
     border: 2px solid var(--pixel-gold) !important;
     box-shadow: 0 0 12px rgba(255,215,0,0.2), 3px 3px 0 rgba(0,0,0,0.2);
 }
