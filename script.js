@@ -189,6 +189,7 @@ document.addEventListener('DOMContentLoaded', function() {
     updateTotalAssets();
     updateBreakdown();
     setupPresets();
+    setPreset('average');
 
     dom.projectBtn.addEventListener('click', calculateProjection);
     dom.resetBtn.addEventListener('click', resetForm);
