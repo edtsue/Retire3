@@ -171,6 +171,7 @@
                             <button type="button" class="preset-btn" id="conservative-btn">Conservative</button>
                             <button type="button" class="preset-btn" id="average-btn">Average</button>
                             <button type="button" class="preset-btn" id="aggressive-btn">Aggressive</button>
+                            <button type="button" class="preset-btn monte-carlo-btn" id="monte-carlo-btn" title="Run Monte Carlo simulation">&#127922; Monte Carlo</button>
                         </div>
                     </div>
 
@@ -190,11 +191,7 @@
                         <div class="total-label">GOLD <span class="coin-icon">&#9733;</span></div>
                         <div class="total-value" id="total-assets">$0</div>
                     </div>
-                    <div class="xp-bar-wrapper" id="xp-bar-wrapper" style="display:none;">
-                        <div class="xp-label">PORTFOLIO XP</div>
-                        <div class="xp-bar"><div class="xp-fill" id="xp-fill"></div></div>
-                        <div class="xp-text" id="xp-text">LVL 1</div>
-                    </div>
+
 
                     <div class="asset-breakdown" id="asset-breakdown" style="display: none;">
                         <div class="breakdown-bars" id="breakdown-bars"></div>
@@ -213,15 +210,15 @@
                     </div>
                 </div>
                 <div class="summary-cards" id="summary-cards" style="display: none;">
-                    <div class="summary-card card-total retro-border">
-                        <div class="summary-label">TREASURE</div>
-                        <div class="summary-value retro-num" id="summary-total">$0</div>
-                        <div class="summary-sub" id="summary-years"></div>
-                    </div>
                     <div class="summary-card card-income retro-border">
                         <div class="summary-label">ANNUAL LOOT (4%)</div>
                         <div class="summary-value retro-num" id="summary-income">$0</div>
                         <div class="summary-sub">Estimated withdrawal</div>
+                    </div>
+                    <div class="summary-card card-total retro-border">
+                        <div class="summary-label">TREASURE</div>
+                        <div class="summary-value retro-num" id="summary-total">$0</div>
+                        <div class="summary-sub" id="summary-years"></div>
                     </div>
                 </div>
 

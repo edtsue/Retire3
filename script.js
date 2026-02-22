@@ -56,9 +56,6 @@ function cacheDom() {
     dom.compareBtn = document.getElementById('compare-btn');
     dom.chartActions = document.getElementById('chart-actions');
     dom.levelUpBanner = document.getElementById('level-up-banner');
-    dom.xpBarWrapper = document.getElementById('xp-bar-wrapper');
-    dom.xpFill = document.getElementById('xp-fill');
-    dom.xpText = document.getElementById('xp-text');
     dom.coinParticles = document.getElementById('coin-particles');
 }
 
@@ -161,7 +158,6 @@ document.addEventListener('DOMContentLoaded', function() {
     var debouncedUpdate = debounce(function() {
         updateTotalAssets();
         updateBreakdown();
-        updateXpBar();
     }, 120);
 
     // Format asset amount fields
@@ -192,7 +188,6 @@ document.addEventListener('DOMContentLoaded', function() {
 
     updateTotalAssets();
     updateBreakdown();
-    updateXpBar();
     setupPresets();
 
     dom.projectBtn.addEventListener('click', calculateProjection);
@@ -229,6 +224,7 @@ function setupPresets() {
     document.getElementById('conservative-btn').addEventListener('click', function() { setPreset('conservative'); });
     document.getElementById('average-btn').addEventListener('click', function() { setPreset('average'); });
     document.getElementById('aggressive-btn').addEventListener('click', function() { setPreset('aggressive'); });
+    document.getElementById('monte-carlo-btn').addEventListener('click', runMonteCarlo);
 }
 
 function setPreset(type) {
@@ -340,7 +336,6 @@ function loadPlan() {
 
         updateTotalAssets();
         updateBreakdown();
-        updateXpBar();
         showToast('SAVE FILE LOADED!');
     } catch (e) {
         showToast('Error loading plan');
@@ -373,8 +368,6 @@ function resetForm() {
     dom.projectionChart.style.display = 'none';
     dom.chartPlaceholder.style.display = 'flex';
     dom.levelUpBanner.style.display = 'none';
-    dom.xpBarWrapper.style.display = 'none';
-    previousLevel = 0;
     comparisonData = null;
 
     showToast('GAME RESET!');
@@ -617,68 +610,6 @@ function downloadChart() {
 
 // --- 16-BIT RETRO GAME FEATURES ---
 
-// XP bar: maps total assets to a level / XP percentage
-var XP_LEVELS = [
-    { min: 0,          label: 'LVL 1 - PEASANT' },
-    { min: 100000,     label: 'LVL 2 - SQUIRE' },
-    { min: 250000,     label: 'LVL 3 - KNIGHT' },
-    { min: 500000,     label: 'LVL 4 - BARON' },
-    { min: 1000000,    label: 'LVL 5 - LORD' },
-    { min: 2000000,    label: 'LVL 6 - DUKE' },
-    { min: 5000000,    label: 'LVL 7 - KING' },
-    { min: 10000000,   label: 'LVL 8 - EMPEROR' },
-    { min: 50000000,   label: 'LVL 9 - LEGEND' },
-    { min: 100000000,  label: 'LVL MAX - GOD MODE' }
-];
-
-function getLevel(totalAssets) {
-    var level = XP_LEVELS[0];
-    for (var i = XP_LEVELS.length - 1; i >= 0; i--) {
-        if (totalAssets >= XP_LEVELS[i].min) {
-            level = XP_LEVELS[i];
-            break;
-        }
-    }
-    return { index: XP_LEVELS.indexOf(level), label: level.label, min: level.min };
-}
-
-function getXpPercent(totalAssets) {
-    var lvl = getLevel(totalAssets);
-    var nextIdx = Math.min(lvl.index + 1, XP_LEVELS.length - 1);
-    if (lvl.index === XP_LEVELS.length - 1) return 100;
-    var range = XP_LEVELS[nextIdx].min - lvl.min;
-    var progress = totalAssets - lvl.min;
-    return Math.min(100, Math.max(0, (progress / range) * 100));
-}
-
-var previousLevel = 0;
-
-function updateXpBar() {
-    var total = 0;
-    ASSET_IDS.forEach(function(id) {
-        total += parseNumber(dom[id + 'Amount'].value);
-    });
-
-    if (total <= 0) {
-        dom.xpBarWrapper.style.display = 'none';
-        return;
-    }
-
-    dom.xpBarWrapper.style.display = 'block';
-    var lvl = getLevel(total);
-    var pct = getXpPercent(total);
-
-    dom.xpFill.style.width = pct.toFixed(1) + '%';
-    dom.xpText.textContent = lvl.label;
-
-    // Check for level up
-    if (lvl.index > previousLevel && previousLevel > 0) {
-        showToast('LEVEL UP! ' + lvl.label);
-        spawnCoinBurst(6);
-    }
-    previousLevel = lvl.index;
-}
-
 // Coin particle burst
 function spawnCoinBurst(count) {
     for (var i = 0; i < count; i++) {
@@ -697,14 +628,12 @@ function spawnCoinBurst(count) {
     }
 }
 
-// Show Level Up banner on projection
+// Show Level Up banner on projection (coin burst celebration)
 function showLevelUp(totalProjected) {
-    var lvl = getLevel(totalProjected);
-    var currentLvl = getLevel(parseNumber(dom.totalAssets.textContent.replace('$', '')));
-
-    if (lvl.index > currentLvl.index) {
+    var currentTotal = parseNumber(dom.totalAssets.textContent.replace('$', ''));
+    if (totalProjected > currentTotal * 1.5) {
         dom.levelUpBanner.style.display = 'block';
-        dom.levelUpBanner.querySelector('.level-up-text').textContent = 'LEVEL UP! ' + lvl.label;
+        dom.levelUpBanner.querySelector('.level-up-text').textContent = 'GROWTH UNLOCKED!';
         spawnCoinBurst(10);
         setTimeout(function() {
             dom.levelUpBanner.style.display = 'none';
@@ -712,4 +641,293 @@ function showLevelUp(totalProjected) {
     } else {
         dom.levelUpBanner.style.display = 'none';
     }
+}
+
+// --- MONTE CARLO SIMULATION ---
+// Historical annual standard deviations (volatility) by asset class
+var ASSET_VOLATILITY = {
+    stocks: 16.0,       // S&P 500 historical ~16%
+    cash: 2.0,          // Cash/CDs/short bonds ~2%
+    retirement: 12.0,   // Blended retirement portfolio ~12%
+    insurance: 1.5,     // Insurance/annuity ~1.5%
+    realestate: 10.0    // Real estate ~10%
+};
+
+var MC_SIMULATIONS = 2000;
+var MC_YEARS = [1, 5, 10, 15, 20, 25];
+
+// Box-Muller transform for normal random numbers
+function randNormal() {
+    var u = 0, v = 0;
+    while (u === 0) u = Math.random();
+    while (v === 0) v = Math.random();
+    return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+}
+
+function runMonteCarlo() {
+    var age = sanitizeNumber(dom.age.value, 18, 100, DEFAULT_AGE);
+    var inflation = sanitizeNumber(dom.inflation.value, 0, 20, DEFAULT_INFLATION);
+
+    var amounts = {};
+    var arrs = {};
+    var totalInput = 0;
+    ASSET_IDS.forEach(function(id) {
+        amounts[id] = parseNumber(dom[id + 'Amount'].value);
+        arrs[id] = sanitizeNumber(dom[id + 'Arr'].value, -50, 50, 0);
+        totalInput += amounts[id];
+    });
+
+    if (totalInput <= 0) {
+        showToast('Enter asset values first');
+        return;
+    }
+
+    // Show loading state
+    dom.chartPlaceholder.style.display = 'none';
+    dom.chartSkeleton.style.display = 'flex';
+    dom.projectionChart.style.display = 'none';
+    dom.summaryCards.style.display = 'none';
+    dom.chartActions.style.display = 'none';
+
+    showToast('Rolling the dice... ' + MC_SIMULATIONS + ' simulations');
+
+    setTimeout(function() {
+        // Run simulations
+        var maxYear = MC_YEARS[MC_YEARS.length - 1];
+        var allPaths = []; // array of arrays: each path has value at each MC_YEARS checkpoint
+
+        for (var sim = 0; sim < MC_SIMULATIONS; sim++) {
+            var yearTotals = [];
+            var checkpoint = 0;
+
+            // Track running balances per asset
+            var balances = {};
+            ASSET_IDS.forEach(function(id) {
+                balances[id] = amounts[id];
+            });
+
+            for (var y = 1; y <= maxYear; y++) {
+                // Apply random return for each asset this year
+                ASSET_IDS.forEach(function(id) {
+                    var meanReturn = (arrs[id] - inflation) / 100;
+                    var vol = ASSET_VOLATILITY[id] / 100;
+                    var randomReturn = meanReturn + vol * randNormal();
+                    balances[id] = balances[id] * (1 + randomReturn);
+                    if (balances[id] < 0) balances[id] = 0;
+                });
+
+                // Check if this year is a checkpoint
+                if (MC_YEARS[checkpoint] === y) {
+                    var total = 0;
+                    ASSET_IDS.forEach(function(id) {
+                        total += balances[id];
+                    });
+                    yearTotals.push(Math.max(0, total));
+                    checkpoint++;
+                }
+            }
+            allPaths.push(yearTotals);
+        }
+
+        // Calculate percentiles at each checkpoint
+        var percentiles = { p10: [], p25: [], p50: [], p75: [], p90: [] };
+
+        for (var c = 0; c < MC_YEARS.length; c++) {
+            var values = [];
+            for (var s = 0; s < MC_SIMULATIONS; s++) {
+                values.push(allPaths[s][c]);
+            }
+            values.sort(function(a, b) { return a - b; });
+
+            percentiles.p10.push(values[Math.floor(MC_SIMULATIONS * 0.10)]);
+            percentiles.p25.push(values[Math.floor(MC_SIMULATIONS * 0.25)]);
+            percentiles.p50.push(values[Math.floor(MC_SIMULATIONS * 0.50)]);
+            percentiles.p75.push(values[Math.floor(MC_SIMULATIONS * 0.75)]);
+            percentiles.p90.push(values[Math.floor(MC_SIMULATIONS * 0.90)]);
+        }
+
+        var labels = MC_YEARS.map(function(year) {
+            return year + ' yrs (Age ' + (age + year) + ')';
+        });
+
+        // Store for summary
+        lastProjectionData = { labels: labels, data: percentiles.p50 };
+
+        // Render fan chart
+        dom.chartSkeleton.style.display = 'none';
+        dom.projectionChart.style.display = 'block';
+        renderMonteCarloChart(labels, percentiles);
+
+        // Update summary with median (50th percentile)
+        var medianFinal = percentiles.p50[percentiles.p50.length - 1];
+        var medianIncome = medianFinal * WITHDRAWAL_RATE;
+        dom.summaryCards.style.display = 'grid';
+        dom.summaryYears.textContent = 'After ' + MC_YEARS[MC_YEARS.length - 1] + ' yrs (median)';
+        animateValue(dom.summaryTotal, 0, medianFinal, 1000);
+        animateValue(dom.summaryIncome, 0, medianIncome, 1000);
+
+        dom.incomeDisplay.style.display = 'block';
+        dom.annualIncome.textContent = formatCurrency(medianIncome);
+        dom.chartActions.style.display = 'flex';
+
+        showLevelUp(medianFinal);
+
+        // Monte Carlo specific toast with range
+        var p10Final = formatCurrency(percentiles.p10[percentiles.p10.length - 1]);
+        var p90Final = formatCurrency(percentiles.p90[percentiles.p90.length - 1]);
+        showToast('80% chance: ' + p10Final + ' - ' + p90Final, 4000);
+
+        spawnCoinBurst(8);
+    }, 500);
+}
+
+function renderMonteCarloChart(labels, pct) {
+    var ctx = dom.projectionChart.getContext('2d');
+    if (window.projChart) window.projChart.destroy();
+
+    var isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    var gridColor = isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
+    var tickColor = isDark ? '#a0a4b8' : '#666';
+
+    var datasets = [
+        // 10th-90th band (outer)
+        {
+            label: '90th percentile',
+            data: pct.p90,
+            borderColor: 'rgba(34, 197, 94, 0.25)',
+            backgroundColor: 'rgba(34, 197, 94, 0.06)',
+            borderWidth: 1,
+            borderDash: [4, 4],
+            fill: false,
+            tension: 0.4,
+            pointRadius: 3,
+            pointBackgroundColor: 'rgba(34, 197, 94, 0.5)',
+            pointBorderWidth: 0
+        },
+        {
+            label: '10th percentile',
+            data: pct.p10,
+            borderColor: 'rgba(239, 68, 68, 0.25)',
+            backgroundColor: 'rgba(239, 68, 68, 0.06)',
+            borderWidth: 1,
+            borderDash: [4, 4],
+            fill: false,
+            tension: 0.4,
+            pointRadius: 3,
+            pointBackgroundColor: 'rgba(239, 68, 68, 0.5)',
+            pointBorderWidth: 0
+        },
+        // 25th-75th band (inner)
+        {
+            label: '75th percentile',
+            data: pct.p75,
+            borderColor: 'rgba(34, 197, 94, 0.45)',
+            backgroundColor: 'rgba(34, 197, 94, 0.12)',
+            borderWidth: 1.5,
+            fill: '+1',
+            tension: 0.4,
+            pointRadius: 4,
+            pointBackgroundColor: 'rgba(34, 197, 94, 0.7)',
+            pointBorderWidth: 0
+        },
+        {
+            label: '25th percentile',
+            data: pct.p25,
+            borderColor: 'rgba(245, 158, 11, 0.45)',
+            backgroundColor: 'rgba(245, 158, 11, 0.08)',
+            borderWidth: 1.5,
+            fill: false,
+            tension: 0.4,
+            pointRadius: 4,
+            pointBackgroundColor: 'rgba(245, 158, 11, 0.7)',
+            pointBorderWidth: 0
+        },
+        // Median line (center)
+        {
+            label: 'Median (50th)',
+            data: pct.p50,
+            borderColor: '#22c55e',
+            backgroundColor: 'rgba(34, 197, 94, 0.08)',
+            borderWidth: 3,
+            fill: false,
+            tension: 0.4,
+            pointBackgroundColor: '#22c55e',
+            pointBorderColor: isDark ? '#1e202c' : '#fff',
+            pointBorderWidth: 2,
+            pointRadius: 6,
+            pointHoverRadius: 10,
+            pointHoverBackgroundColor: '#fff',
+            pointHoverBorderColor: '#22c55e',
+            pointHoverBorderWidth: 3
+        }
+    ];
+
+    window.projChart = new Chart(ctx, {
+        type: 'line',
+        data: { labels: labels, datasets: datasets },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            animation: { duration: 1200, easing: 'easeOutQuart' },
+            layout: { padding: { bottom: 10, top: 10 } },
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top',
+                    labels: {
+                        usePointStyle: true,
+                        padding: 12,
+                        color: tickColor,
+                        font: { family: "'Inter', sans-serif", weight: '600', size: 11 },
+                        filter: function(item) {
+                            // Only show key labels
+                            return ['Median (50th)', '75th percentile', '25th percentile', '90th percentile', '10th percentile'].indexOf(item.text) >= 0;
+                        }
+                    }
+                },
+                tooltip: {
+                    enabled: true,
+                    backgroundColor: isDark ? 'rgba(30,32,44,0.95)' : 'rgba(26,26,46,0.95)',
+                    titleFont: { size: 12, family: "'Inter', sans-serif" },
+                    bodyFont: { size: 12, weight: '600', family: "'Inter', sans-serif" },
+                    padding: 14,
+                    cornerRadius: 10,
+                    displayColors: true,
+                    callbacks: {
+                        label: function(context) {
+                            var val = formatCurrency(context.parsed.y);
+                            return context.dataset.label + ': ' + val;
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) { return formatCurrency(value); },
+                        color: tickColor,
+                        font: { size: 11, family: "'Inter', sans-serif" }
+                    },
+                    grid: { color: gridColor }
+                },
+                x: {
+                    ticks: {
+                        maxRotation: 45,
+                        color: tickColor,
+                        font: { size: 11, family: "'Inter', sans-serif" }
+                    },
+                    grid: { color: gridColor }
+                }
+            },
+            interaction: { intersect: false, mode: 'index' },
+            onHover: function(event, elements) {
+                if (elements.length > 0) {
+                    var index = elements[0].index;
+                    var medianVal = pct.p50[index];
+                    dom.annualIncome.textContent = formatCurrency(medianVal * WITHDRAWAL_RATE);
+                }
+            }
+        }
+    });
 }
